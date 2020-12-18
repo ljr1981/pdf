@@ -1,5 +1,5 @@
 # Eiffel PDF Library
-This library is dependent on the wrap_cairo library. You will need to clone into this library, paying special attention to its installation instructions and the finish_freezing -library step, which makes the cairo library available to wrap_cairo and then to PDF (this library).
+This library is dependent on the [wrap_cairo](https://github.com/jvelilla/wrap_cairo) library. You will need to clone into this library, paying special attention to its installation instructions and the finish_freezing -library step, which makes the cairo library available to wrap_cairo and then to PDF (this library).
 
 # Work in Progress
 This library is a work in progress. Expect many changes over the coming weeks and months. Please ask for features as you might like, want, or need.
