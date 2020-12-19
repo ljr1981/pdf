@@ -12,14 +12,29 @@ create
 
 feature {PDF_FACTORY} -- Initialize
 
+	make_from_page_spec (a_cr: CAIRO_STRUCT_API; a_spec: PDF_PAGE_SPEC)
+			-- Create with `a_spec'.
+		do
+			cr := a_cr
+			height := a_spec.height
+			width := a_spec.width
+			set_indent_size (a_spec.indent_size)
+			set_font_color (a_spec.font_color)
+			set_font_face (a_spec.font_face)
+			set_margin_top (a_spec.margin_top)
+			set_margin_bottom (a_spec.margin_bottom)
+			set_margin_left (a_spec.margin_left)
+			set_margin_right (a_spec.margin_right)
+		end
+
 	make (a_cr: CAIRO_STRUCT_API; a_sizing: TUPLE [h, w: INTEGER])
 			-- Create with `a_cr' reference.
 		do
 			cr := a_cr
 
 				-- Setting of page height and width
-			page_height := a_sizing.h
-			page_width := a_sizing.w
+			height := a_sizing.h
+			width := a_sizing.w
 
 				-- Settings of font Color, Face, and Size by default
 			set_indent_size (default_indent)
@@ -34,16 +49,16 @@ feature {PDF_FACTORY} -- Initialize
 
 feature -- Access
 
-	page_height: INTEGER
+	height: INTEGER
 			-- The current `page_height' in points.
 
-	page_width: INTEGER
+	width: INTEGER
 			-- The current `page_width' in points.
 
-	page_header_size,
-	page_footer_size,
-	page_left_margin_size,
-	page_right_margin_size: INTEGER
+	margin_top,
+	margin_bottom,
+	margin_left,
+	margin_right: INTEGER
 			-- The page header, footer, left-and-right margin sizes.
 			-- MediaPage size				 Print area     Top    Bottom  Sides
 			-- 1.A/Letter (U.S.)8.5 x 11 in. 8.2 x 10.6 in. .22 in. .18 in .15 in
@@ -68,7 +83,7 @@ feature -- Access
 	max_lines: INTEGER
 			-- What are the max number of lines of current PDF PAGE?
 		do
-			Result := ((page_height - page_header_size - page_footer_size) / font_size).truncated_to_integer
+			Result := ((height - margin_top - margin_bottom) / font_size).truncated_to_integer
 		end
 
 	current_x: INTEGER
@@ -149,10 +164,10 @@ feature -- Settings
 		note
 			EIS: "src=https://www.office.xerox.com/userdoc/P540/540Margn.pdf#:~:text=Margins%%20Media%%20Page%%20size%%20Print%%20area%%20Top%%20Bottom,287%%20mm%%205%%20mm%%205%%20mm%%205%%20mm"
 		do
-			page_header_size := (.22 * 72).truncated_to_integer
-			page_footer_size := (.18 * 72).truncated_to_integer
-			page_left_margin_size := (.15 * 72).truncated_to_integer
-			page_right_margin_size := (.15 * 72).truncated_to_integer
+			margin_top := (.22 * 72).truncated_to_integer
+			margin_bottom := (.18 * 72).truncated_to_integer
+			margin_left := (.15 * 72).truncated_to_integer
+			margin_right := (.15 * 72).truncated_to_integer
 		end
 
 	set_indent_size (n: INTEGER)
@@ -181,25 +196,57 @@ feature -- Settings
 			set: current_y = y
 		end
 
-	move
-			-- Move to `current_x' and `current_y' on `cr'
+	set_margin_top (n: INTEGER)
+			--
 		do
-			{CAIRO_FUNCTIONS}.cairo_move_to (cr, current_x.to_real, current_y.to_real)
+			margin_top := n
+		ensure
+			set: margin_top = n
+		end
+
+	set_margin_bottom (n: INTEGER)
+			--
+		do
+			margin_bottom := n
+		ensure
+			set: margin_bottom = n
+		end
+
+	set_margin_left (n: INTEGER)
+			--
+		do
+			margin_left := n
+		ensure
+			set: margin_left = n
+		end
+
+	set_margin_right (n: INTEGER)
+			--
+		do
+			margin_right := n
+		ensure
+			set: margin_right = n
 		end
 
 feature -- Status Report
 
 feature -- Basic Operations
 
+	move
+			-- Move to `current_x' and `current_y' on `cr'
+		do
+			{CAIRO_FUNCTIONS}.cairo_move_to (cr, current_x.to_real, current_y.to_real)
+		end
+
 	position_top_left
 			-- Position `current_x' and `current_y' to top left.
 		do
-			current_x := (page_left_margin_size.to_real).truncated_to_integer
-			current_y := (page_header_size.to_real + font_size).truncated_to_integer
+			current_x := (margin_left.to_real).truncated_to_integer
+			current_y := (margin_top.to_real + font_size).truncated_to_integer
 			move
 		ensure
-			x_set: current_x = (page_left_margin_size.to_real).truncated_to_integer
-			y_set: current_y = (page_header_size.to_real + font_size).truncated_to_integer
+			x_set: current_x = (margin_left.to_real).truncated_to_integer
+			y_set: current_y = (margin_top.to_real + font_size).truncated_to_integer
 		end
 
 	down_n_lines (n: INTEGER)
@@ -215,10 +262,10 @@ feature -- Basic Operations
 			-- Perform a CR+LF
 		do
 			down_n_lines (1)
-			current_x := page_left_margin_size
+			current_x := margin_left
 			move
 		ensure
-			carriage_returned: current_x = page_left_margin_size
+			carriage_returned: current_x = margin_left
 		end
 
 	indent_one

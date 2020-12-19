@@ -22,8 +22,12 @@
 			<void_safety support="all" use="all"/>
 		</capability>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
-		<library name="wrap_cairo" location="\home\larry\projects\github\wrap_cairo\library\wrap_cairo.ecf"/>
+		<library name="decimal" location="$ISE_LIBRARY\contrib\library\math\decimal\decimal\decimal.ecf"/>
 		<library name="diff" location="$ISE_LIBRARY\library\diff\diff.ecf"/>
+		<library name="json" location="$ISE_LIBRARY\contrib\library\text\parser\json\library\json.ecf"/>
+		<library name="json_ext" location="\home\larry\projects\github\json_ext\json_ext.ecf"/>
+		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
+		<library name="wrap_cairo" location="\home\larry\projects\github\wrap_cairo\library\wrap_cairo.ecf"/>
 		<cluster name="pdf" location=".\" recursive="true"/>
 	</target>
 	<target name="test" extends="pdf">
