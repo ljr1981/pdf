@@ -6,6 +6,10 @@ class
 
 note
 	design: "[
+		PDF_REPORT ::= {PDF_PAGE_SPEC}+
+	
+		PDF_PAGE_SPEC ::= {PDF_CELL}+
+		
 		PDF_CELL ::= {PDF_CELL}(1)
 		
 		A PDF_PAGE always contains one (1) PDF_CELL within its margins.
@@ -26,7 +30,30 @@ note
 		
 		PDF_LINE_WIDGET items are PDF_BOX items which can draw lines on their edges (top, sides, bottom).
 		PDF_TEXT_WIDGET inherits PDF_LINE_WIDGET. PDF_BOX items contain (possibly clipped) text.
-		PDF_IMAGE_WIDGET inherits PDF_LINE_WIDGET. PDF_BOX items contain (possibly clipped) graphics (e.g. PNG, JPG, SVG, etc).		
+		PDF_IMAGE_WIDGET inherits PDF_LINE_WIDGET. PDF_BOX items contain (possibly clipped) graphics (e.g. PNG, JPG, SVG, etc).
+		
+		So--the steps are:
+		
+		1. Build a report object with each page-spec(s)
+		2. Build object for each page-spec with a page-layout-spec
+		3. Build object for each page-layout-spec with related widgets
+		4. Read-parse-fill page-layout-spec recursively with json-data
+			where json-data is translated in PDF_WIDGETS that are placed
+			in PDF_BOXes within a specified PDF_PAGE_SPEC.
+			
+		Pdf_resport ::= {Pdf_page_spec}+
+			
+		Pdf_page_spec ::= {Pdf_box}+
+		
+		Pdf_box ::= {Pdf_box | Pdf_widget}+
+		
+		Where: Each Pdf_page_spec, Pdf_box, Pdf_widget is uniquely named.
+		Where: Each json-data item specifies its page-spec-name/box-name/widget-name as a target "namespace".
+		
+		Therefore: As each item (based on json-data item) is "placed", it computes is space-needs, position, formatting, and so on
+		from its specifications, within the boundaries set, paying attention to clipping, overlay, hiding,
+		and layering.
+
 		]"
 
 end
