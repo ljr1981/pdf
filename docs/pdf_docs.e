@@ -31,8 +31,9 @@ note
 		PDF_LINE_WIDGET items are PDF_BOX items which can draw lines on their edges (top, sides, bottom).
 		PDF_TEXT_WIDGET inherits PDF_LINE_WIDGET. PDF_BOX items contain (possibly clipped) text.
 		PDF_IMAGE_WIDGET inherits PDF_LINE_WIDGET. PDF_BOX items contain (possibly clipped) graphics (e.g. PNG, JPG, SVG, etc).
-		
-		So--the steps are:
+				]"
+	process: "[
+		Based upon the design (above), the processing-step are:
 		
 		1. Build a report object with each page-spec(s)
 		2. Build object for each page-spec with a page-layout-spec
@@ -53,7 +54,6 @@ note
 		Therefore: As each item (based on json-data item) is "placed", it computes is space-needs, position, formatting, and so on
 		from its specifications, within the boundaries set, paying attention to clipping, overlay, hiding,
 		and layering.
-
 		]"
 
 end
