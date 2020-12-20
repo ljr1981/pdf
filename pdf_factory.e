@@ -23,8 +23,8 @@ create
 
 feature {NONE} -- Initialization
 
-	make_us_std_with_name (a_file_name: STRING)
-			-- Initialize PDF with `a_file_name' as US Std
+	make_us_std_with_name (a_file_name: READABLE_STRING_GENERAL)
+			-- Initialize PDF with `a_file_name' as US Std.
 		require
 			not_destroyed: not is_destroyed
 		do
@@ -33,14 +33,14 @@ feature {NONE} -- Initialization
 		end
 
 	make_us_std
-			-- Make PDF as US 8.5 x 11
+			-- Make PDF as US 8.5 x 11.
 		require
 			not_destroyed: not is_destroyed
 		do
 			default_create
 		end
 
-	make (a_file_name: STRING; a_height, a_width: INTEGER)
+	make (a_file_name: READABLE_STRING_GENERAL; a_height, a_width: INTEGER)
 			-- Initialize PDF with `a_file_name' and `a_height', `a_width'.
 		require
 			not_destroyed: not is_destroyed
@@ -79,7 +79,7 @@ feature -- Access
 	page_width: INTEGER assign set_page_width
 			-- The `page_width' in points.
 
-	file_name: STRING assign set_file_name
+	file_name: READABLE_STRING_GENERAL assign set_file_name
 			-- The `file_name' of PDF.
 		require
 			not_destroyed: not is_destroyed
@@ -164,8 +164,8 @@ feature -- Settings
 			set: page_width = a_value
 		end
 
-	set_file_name (a_value: STRING)
-			--
+	set_file_name (a_value: READABLE_STRING_GENERAL)
+			-- Set `filename` with the given value `a_value`.
 		require
 			not_destroyed: not is_destroyed
 		do
@@ -216,12 +216,7 @@ feature {NONE} -- Implementation
 		require
 			not_destroyed: not is_destroyed
 		once ("OBJECT")
-			check has_surface_ptr:
-				attached {CAIRO_PDF_FUNCTIONS_API}.cairo_pdf_surface_create((create {C_STRING}.make (file_name)).item, page_width, page_height) as al_surface_ptr and then
-				al_surface_ptr /= default_pointer
-			then
-				create Result.make_by_pointer (al_surface_ptr)
-			end
+			Result := {CAIRO_PDF_FUNCTIONS}.cairo_pdf_surface_create(file_name, page_width, page_height)
 		ensure
 			has_surface: {CAIRO_FUNCTIONS}.cairo_surface_status (Result) = {CAIRO_STATUS_ENUM_API}.cairo_status_success
 		end
