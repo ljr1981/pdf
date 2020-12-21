@@ -7,9 +7,15 @@ class
 inherit
 	PDF_SPEC
 
+	PDF_CONST
+		undefine
+			default_create
+		end
+
 create
 	default_create,
-	make_from_json
+	make_from_json,
+	make_from_json_value
 
 feature {NONE} -- Initialization
 
@@ -28,15 +34,7 @@ feature {NONE} -- Initialization
 			--<Precursor>
 		do
 			Result := <<
---						create {JSON_METADATA}.make_text_default,
---						create {JSON_METADATA}.make_text_default,
---						create {JSON_METADATA}.make_text_default,
---						create {JSON_METADATA}.make_text_default,
---						create {JSON_METADATA}.make_text_default,
---						create {JSON_METADATA}.make_text_default,
---						create {JSON_METADATA}.make_text_default,
---						create {JSON_METADATA}.make_text_default,
---						create {JSON_METADATA}.make_text_default,
+						create {JSON_METADATA}.make_text_default,
 						create {JSON_METADATA}.make_text_default
 						>>
 		end
@@ -45,15 +43,6 @@ feature {NONE} -- Initialization
 			--<Precursor>
 		do
 			Result := <<
---						"height",
---						"width",
---						"indent_size",
---						"font_color",
---						"font_face",
---						"font_size",
---						"margin_top",
---						"margin_bottom",
---						"margin_left",
 						"name",
 						"page_specs"
 						>>
@@ -68,6 +57,8 @@ feature -- Access
 		attribute
 			create Result.make (10)
 		end
+
+	is_destroyed: BOOLEAN
 
 feature -- Settings
 
@@ -84,5 +75,67 @@ feature -- Settings
 				end
 			end
 		end
+
+feature -- Basic Operations
+
+	print_to_file (a_file_name, a_json: STRING)
+			-- `print' Current to `a_file_name' PDF file.
+		do
+			file_name := a_file_name
+			page_height := US_8_by_11_page_height
+			page_width := US_8_by_11_page_width
+			
+		end
+
+feature {NONE} -- Implementation
+
+	file_name: STRING
+		attribute
+			create Result.make_empty
+		end
+
+	page_width, page_height: INTEGER
+
+	set_surface_size (h, w: INTEGER)
+			-- Set the size of the `surface' to `h' and `w' (height and width).
+		note
+			C_API_description: "[
+				Changes the size of a PostScript surface for the current (and subsequent) pages.
+				
+				This function should only be called before any drawing operations have been 
+				performed on the current page. The simplest way to do this is to call this 
+				function immediately after creating the surface or immediately after completing 
+				a page with either Context.show_page() or Context.copy_page().
+				]"
+		do
+			{CAIRO_PDF_FUNCTIONS_API}.cairo_pdf_surface_set_size (surface, w, h)
+		end
+
+
+	surface: CAIRO_SURFACE_STRUCT_API
+			-- PDF Drawing Surface.
+		require
+			not_destroyed: not is_destroyed
+		once ("OBJECT")
+			Result := {CAIRO_PDF_FUNCTIONS}.cairo_pdf_surface_create(file_name, page_width, page_height)
+		ensure
+			has_surface: {CAIRO_FUNCTIONS}.cairo_surface_status (Result) = {CAIRO_STATUS_ENUM_API}.cairo_status_success
+		end
+
+	cr: CAIRO_STRUCT_API
+			-- `cr' is  reference list with count to `surface's.
+		note
+			EIS: "name=cr", "src=https://www.cairographics.org/manual/cairo-cairo-t.html#cairo-create"
+		require
+			not_destroyed: not is_destroyed
+		once ("OBJECT")
+			check has_surface_then_cr: attached surface as al_surface and then
+				attached {CAIRO_FUNCTIONS}.cairo_create (surface) as al_result and then
+					{CAIRO_FUNCTIONS}.cairo_status (al_result) = {CAIRO_STATUS_ENUM_API}.cairo_status_success
+			then
+				Result := al_result
+			end
+		end
+
 
 end

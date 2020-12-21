@@ -1,7 +1,7 @@
 note
 	description: "PDF_CELL single-item container"
 
-class
+deferred class
 	PDF_CELL
 
 inherit
@@ -20,6 +20,40 @@ feature {NONE} -- Initialization
 			limit := 1
 		ensure then
 			set_expandable: expandable
+		end
+
+	metadata_refreshed (a_current: ANY): ARRAY [JSON_METADATA]
+			--<Precursor>
+		do
+			Result := <<
+						create {JSON_METADATA}.make_text_default,
+						create {JSON_METADATA}.make_text_default,
+						create {JSON_METADATA}.make_text_default,
+						create {JSON_METADATA}.make_text_default,
+						create {JSON_METADATA}.make_text_default,
+						create {JSON_METADATA}.make_text_default,
+						create {JSON_METADATA}.make_text_default,
+						create {JSON_METADATA}.make_text_default,
+						create {JSON_METADATA}.make_text_default,
+						create {JSON_METADATA}.make_text_default
+						>>
+		end
+
+	convertible_features (a_current: ANY): ARRAY [STRING_8]
+			--<Precursor>
+		do
+			Result := <<
+						"items",
+						"offset_x",
+						"offset_y",
+						"height",
+						"width",
+						"inside_border_padding",
+						"outside_border_padding",
+						"expandable",
+						"limit",
+						"parent"
+						>>
 		end
 
 feature -- Access
@@ -50,7 +84,17 @@ feature -- Access
 
 feature -- Settings
 
-	set_x (n: INTEGER)
+	set_items (o: like items)
+			-- Set `items' to items in `o'.
+		do
+			across
+				o as ic
+			loop
+				items.force (ic.item)
+			end
+		end
+
+	set_offset_x (n: INTEGER)
 			-- Set `offset_x' to `n'.
 		do
 			offset_x := n
@@ -58,12 +102,20 @@ feature -- Settings
 			set: offset_x = n
 		end
 
-	set_y (n: INTEGER)
+	set_offset_y (n: INTEGER)
 			-- Set `offset_y' to `n'.
 		do
 			offset_y := n
 		ensure
 			set: offset_y = n
+		end
+
+	set_limit (n: INTEGER)
+			-- Set `limit' to `n'.
+		do
+			limit := n
+		ensure
+			set: limit = n
 		end
 
 	set_height (n: INTEGER)
@@ -114,7 +166,7 @@ feature -- Settings
 
 feature -- Basic Operations
 
-	extend (v: PDF_CELL)
+	extend (v: like Current)
 			--
 		require
 			enough: (items.count < limit) xor (limit = 0)

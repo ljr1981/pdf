@@ -108,8 +108,15 @@ feature -- Access
 
 feature -- Settings
 
+	set_size (t: TUPLE [h, w: INTEGER])
+			-- Set `height' and `width'.
+		do
+			set_height (t.h)
+			set_width (t.w)
+		end
+
 	set_height (n: INTEGER)
-			--
+			-- Set `height' to `n'.
 		do
 			height := n
 		ensure
@@ -117,7 +124,7 @@ feature -- Settings
 		end
 
 	set_width (n: INTEGER)
-			--
+			-- Set `width' to `n'.
 		do
 			width := n
 		ensure
