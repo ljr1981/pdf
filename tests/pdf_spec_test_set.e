@@ -59,22 +59,42 @@ feature -- Test routines
 				end
 		end
 
-	page_spec_test
-			-- New test routine
+	report_spec_test
+			-- Test {PDF_PAGE_SPEC}
 		note
 			testing:  "covers/{PDF_PAGE_SPEC}.make_from_json",
 						"execution/isolated",
 						"execution/serial"
 		local
-			l_page: PDF_PAGE
+			l_spec: PDF_REPORT_SPEC
+		do
+				-- Ensure that the specification produces the right JSON string
+			l_spec := report_spec_1.twin
+			assert_strings_equal ("report_spec_1_json", report_spec_1_json, l_spec.json_out)
+
+				-- Ensure that the code-generator produces what we think make-from-json will need.
+			assert_strings_equal ("report_spec_1_make_from_json_code_string", report_spec_1_make_from_json_code_string, l_spec.generated_make_from_json_code (l_spec))
+
+				-- Now, create a page from a specification and ensure the JSON output is correct.
+			create l_spec.make_from_json (report_spec_1_json)
+			assert_strings_equal ("report_spec_1_json", report_spec_1_json, l_spec.json_out)
+		end
+
+	page_spec_test
+			-- Test {PDF_PAGE_SPEC}
+		note
+			testing:  "covers/{PDF_PAGE_SPEC}.make_from_json",
+						"execution/isolated",
+						"execution/serial"
+		local
 			l_spec: PDF_PAGE_SPEC
 		do
 				-- Ensure that the specification produces the right JSON string
-			l_spec := page_spec.twin
+			l_spec := page_spec_1.twin
 			assert_strings_equal ("page_spec_json", page_spec_json, l_spec.json_out)
 
 				-- Ensure that the code-generator produces what we think make-from-json will need.
-			assert_strings_equal ("make_from_json_code", make_from_json_code_string, l_spec.generated_make_from_json_code (l_spec))
+			assert_strings_equal ("make_from_json_code", page_spec_1_make_from_json_code_string, l_spec.generated_make_from_json_code (l_spec))
 
 				-- Now, create a page from a specification and ensure the JSON output is correct.
 			create l_spec.make_from_json (page_spec_json)
@@ -83,8 +103,9 @@ feature -- Test routines
 
 feature {NONE} -- Implementation: Constants
 
-	make_from_json_code_string: STRING = "[
+	page_spec_1_make_from_json_code_string: STRING = "[
 check attached json_string_to_json_object (a_json) as al_object then
+	set_name (json_object_to_string_attached ("name", al_object))
 	set_height (json_object_to_integer_32 ("height", al_object))
 	set_width (json_object_to_integer_32 ("width", al_object))
 	set_indent_size (json_object_to_integer_32 ("indent_size", al_object))
@@ -106,13 +127,14 @@ end
 ]"
 
 	page_spec_json: STRING = "[
-{"font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
+{"font_color":[0,0,0],"font_face":["Sans",0,0],"name":"page_spec_1","height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
 ]"
 
-	page_spec: PDF_PAGE_SPEC
-			--
+	page_spec_1: PDF_PAGE_SPEC
+			-- Example #1 of a page spec.
 		once
 			create Result
+			Result.set_name ("page_spec_1")
 			Result.set_font_color ([0,0,0])
 			Result.set_font_face (["Sans", {CAIRO_FONT_SLANT_ENUM_API}.cairo_font_slant_normal, {CAIRO_FONT_WEIGHT_ENUM_API}.cairo_font_weight_normal])
 			Result.set_font_size (10)
@@ -124,6 +146,26 @@ end
 			Result.set_margin_top ({PDF_CONST}.default_margin_top)
 			Result.set_width ({PDF_CONST}.us_8_by_11_page_width)
 		end
+
+	report_spec_1: PDF_REPORT_SPEC
+			--
+		once
+			create Result
+			Result.set_name ("report_spec_1")
+			Result.page_specs.force (page_spec_1)
+		end
+
+	report_spec_1_json: STRING = "[
+{"page_specs":[{"font_color":[0,0,0],"font_face":["Sans",0,0],"name":"page_spec_1","height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}],"name":"report_spec_1"}
+]"
+
+	report_spec_1_make_from_json_code_string: STRING = "[
+check attached json_string_to_json_object (a_json) as al_object then
+	set_name (json_object_to_string_attached ("name", al_object))
+	fill_arrayed_list_of_detachable_any ("page_specs", al_object, page_specs, agent (a_object: JSON_VALUE): PDF_PAGE_SPEC do create Result.make_from_json_value (a_object) end)
+end
+
+]"
 
 end
 

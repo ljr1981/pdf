@@ -9,7 +9,8 @@ inherit
 
 create
 	default_create,
-	make_from_json
+	make_from_json,
+	make_from_json_value
 
 feature {NONE} -- Initialization
 
@@ -19,6 +20,7 @@ feature {NONE} -- Initialization
 			True
 		do
 			check attached json_string_to_json_object (a_json) as al_object then
+				set_name (json_object_to_string_attached ("name", al_object))
 				set_height (json_object_to_integer_32 ("height", al_object))
 				set_width (json_object_to_integer_32 ("width", al_object))
 				set_indent_size (json_object_to_integer_32 ("indent_size", al_object))
@@ -49,6 +51,7 @@ feature {NONE} -- Initialization
 						create {JSON_METADATA}.make_text_default,
 						create {JSON_METADATA}.make_text_default,
 						create {JSON_METADATA}.make_text_default,
+						create {JSON_METADATA}.make_text_default,
 						create {JSON_METADATA}.make_text_default
 						>>
 		end
@@ -57,6 +60,7 @@ feature {NONE} -- Initialization
 			--<Precursor>
 		do
 			Result := <<
+						"name",
 						"height",
 						"width",
 						"indent_size",
@@ -70,9 +74,9 @@ feature {NONE} -- Initialization
 						>>
 		end
 
-feature --
+feature -- Access
 
-	name: STRING = "page"
+	type: STRING = "page"
 
 	height: INTEGER
 
