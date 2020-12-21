@@ -25,46 +25,46 @@ feature -- Test routines
 				The basic idea is to load a TUPLE from an ARRAY. After creating our ARRAY of an
 				arbitrary set of INTEGER items, we then begin loading them as "item-tuples" into
 				iterative instances of our `l_tuple'.
-				]"
+			]"
 		local
 			l_tuple: TUPLE
 			l_array: ARRAY [ANY]
 		do
-					-- Our source array
-				l_array := (1 |..| 3).as_array
+				-- Our source array
+			l_array := (1 |..| 3).as_array
 
-					-- Start adding items to successive TUPLE instances using plus
-				across
-					l_array as ic
-				from
-					create l_tuple								-- First, create our base TUPLE
-				loop											-- Then--for each `l_array' item of type ANY ...
-					if attached l_tuple as al_tuple then		-- Do an attachment check to satisfy Void-safety ...
-						l_tuple := al_tuple.plus (ic.item)		-- Use the facility of `{TUPLE}.plus' to make a new TUPLE, replacing our old one
-					end
-				end												-- Do this until `l_array' is exhausted.
+				-- Start adding items to successive TUPLE instances using plus
+			across
+				l_array as ic
+			from
+				create l_tuple -- First, create our base TUPLE
+			loop -- Then--for each `l_array' item of type ANY ...
+				if attached l_tuple as al_tuple then -- Do an attachment check to satisfy Void-safety ...
+					l_tuple := al_tuple.plus (ic.item) -- Use the facility of `{TUPLE}.plus' to make a new TUPLE, replacing our old one
+				end
+			end -- Do this until `l_array' is exhausted.
 
-					-- Test to ensure each item is what we expect ...
-					-- In this project SCOOP is turned on, so we care about the separate-ness
-				across
-					1 |..| l_array.count as ic
-				loop
-					if attached l_tuple as al_tuple and then attached al_tuple.item (ic.item) as al_tuple_item then
-						separate al_tuple_item as sic do
-							if attached {INTEGER} sic as al_sic then
-								assert_integers_equal ("ic_item_" + ic.item.out, ic.item, al_sic)
-							end
+				-- Test to ensure each item is what we expect ...
+				-- In this project SCOOP is turned on, so we care about the separate-ness
+			across
+				1 |..| l_array.count as ic
+			loop
+				if attached l_tuple as al_tuple and then attached al_tuple.item (ic.item) as al_tuple_item then
+					separate al_tuple_item as sic do
+						if attached {INTEGER} sic as al_sic then
+							assert_integers_equal ("ic_item_" + ic.item.out, ic.item, al_sic)
 						end
 					end
 				end
+			end
 		end
 
 	report_spec_test
 			-- Test {PDF_PAGE_SPEC}
 		note
-			testing:  "covers/{PDF_PAGE_SPEC}.make_from_json",
-						"execution/isolated",
-						"execution/serial"
+			testing: "covers/{PDF_PAGE_SPEC}.make_from_json",
+			"execution/isolated",
+			"execution/serial"
 		local
 			l_spec: PDF_REPORT_SPEC
 		do
@@ -83,9 +83,9 @@ feature -- Test routines
 	page_spec_test
 			-- Test {PDF_PAGE_SPEC}
 		note
-			testing:  "covers/{PDF_PAGE_SPEC}.make_from_json",
-						"execution/isolated",
-						"execution/serial"
+			testing: "covers/{PDF_PAGE_SPEC}.make_from_json",
+			"execution/isolated",
+			"execution/serial"
 		local
 			l_spec: PDF_PAGE_SPEC
 		do
@@ -135,7 +135,7 @@ end
 		once
 			create Result
 			Result.set_name ("page_spec_1")
-			Result.set_font_color ([0,0,0])
+			Result.set_font_color ([0, 0, 0])
 			Result.set_font_face (["Sans", {CAIRO_FONT_SLANT_ENUM_API}.cairo_font_slant_normal, {CAIRO_FONT_WEIGHT_ENUM_API}.cairo_font_weight_normal])
 			Result.set_font_size (10)
 			Result.set_height ({PDF_CONST}.us_8_by_11_page_height)
@@ -168,5 +168,4 @@ end
 ]"
 
 end
-
 
