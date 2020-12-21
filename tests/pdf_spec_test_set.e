@@ -127,7 +127,7 @@ end
 ]"
 
 	page_spec_json: STRING = "[
-{"font_color":[0,0,0],"font_face":["Sans",0,0],"name":"page_spec_1","height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
+{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
 ]"
 
 	page_spec_1: PDF_PAGE_SPEC
@@ -156,7 +156,7 @@ end
 		end
 
 	report_spec_1_json: STRING = "[
-{"page_specs":[{"font_color":[0,0,0],"font_face":["Sans",0,0],"name":"page_spec_1","height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}],"name":"report_spec_1"}
+{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 
 	report_spec_1_make_from_json_code_string: STRING = "[
