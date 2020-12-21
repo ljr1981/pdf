@@ -51,7 +51,7 @@ note
 		Where: Each Pdf_page_spec, Pdf_box, Pdf_widget is uniquely named.
 		Where: Each json-data item specifies its page-spec-name/box-name/widget-name as a target "namespace".
 		
-		Therefore: As each item (based on json-data item) is "placed", it computes is space-needs, position, formatting, and so on
+		Therefore: As each item (based on json-data item) is "placed", it computes its space-needs, position, formatting, and so on
 		from its specifications, within the boundaries set, paying attention to clipping, overlay, hiding,
 		and layering.
 		]"
