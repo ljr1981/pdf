@@ -33,6 +33,7 @@ check attached json_string_to_json_object (a_json) as al_object then
 	set_margin_bottom (json_object_to_integer_32 ("margin_bottom", al_object))
 	set_margin_left (json_object_to_integer_32 ("margin_left", al_object))
 	set_margin_right (json_object_to_integer_32 ("margin_right", al_object))
+	set_cell (no_conversion)
 end
 
 ]"
@@ -82,7 +83,7 @@ end
 		end
 
 	report_spec_1_json: STRING = "[
-{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"cell":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 
 	report_spec_1_make_from_json_code_string: STRING = "[
@@ -94,7 +95,7 @@ end
 ]"
 
 	report_spec_2_json_string: STRING = "[
-{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11},{"name":"page_spec_2","font_color":[0,0,0],"font_face":["Sans",0,0],"height":612,"width":792,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"cell":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11},{"name":"page_spec_2","font_color":[0,0,0],"font_face":["Sans",0,0],"cell":null,"height":612,"width":792,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 
 		-- Test data in JSON format ...
@@ -138,17 +139,17 @@ end
 feature {NONE} -- PDF_WIDGET Support
 
 	text_widget_default_json: STRING = "[
-{"parent":null,"sub_items":null,"text":null,"expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":1}
+{"sub_items":null,"parent":null,"text":null,"expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":1}
 ]"
 
 feature {NONE} -- PDF_BOX Test Support
 
 	page_json: STRING = "[
-{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"cell":{"parent":null,"sub_items":[{"parent":null,"sub_items":null,"text":"TEST_TEXT_FOR_TEXT_WIDGET","expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":1}],"expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":0},"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
+{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"cell":{"sub_items":[{"sub_items":null,"parent":null,"text":"TEST_TEXT_FOR_TEXT_WIDGET","expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":1}],"parent":null,"expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":0},"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
 ]"
 
 	report_json: STRING = "[
-
+{"name":"MY_REPORT_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"cell":{"sub_items":[{"sub_items":null,"parent":null,"text":"TEST_TEXT_FOR_TEXT_WIDGET","expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":1}],"parent":null,"expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":0},"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 
 end

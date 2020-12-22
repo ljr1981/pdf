@@ -130,7 +130,7 @@ feature -- Test routines
 			l_text: PDF_TEXT_WIDGET
 		do
 			l_report := report_spec_2.twin
-			assert_strings_equal ("report_test_1_json", report_spec_2_json_string, l_report.json_out)
+			assert_strings_equal ("report_spec_2_json_string", report_spec_2_json_string, l_report.json_out)
 			assert_integers_equal ("two_page_specs", 2, l_report.page_specs.count)
 		end
 
