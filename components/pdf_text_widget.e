@@ -48,7 +48,7 @@ feature {NONE} -- Initialization
 				set_width (json_object_to_integer_32 ("width", al_object))
 				set_inside_border_padding (json_object_to_integer_32 ("inside_border_padding", al_object))
 				set_outside_border_padding (json_object_to_integer_32 ("outside_border_padding", al_object))
-				-- set_expandable ()
+				set_expandable (json_object_to_boolean ("expandable", al_object))
 				set_limit (json_object_to_integer_32 ("limit", al_object))
 				-- set_parent (no_conversion)
 			end

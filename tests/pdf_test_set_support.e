@@ -38,7 +38,7 @@ end
 ]"
 
 	page_spec_json: STRING = "[
-{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
+{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"cell":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
 ]"
 
 	frozen page_spec_1: PDF_PAGE_SPEC
@@ -139,6 +139,16 @@ feature {NONE} -- PDF_WIDGET Support
 
 	text_widget_default_json: STRING = "[
 {"parent":null,"sub_items":null,"text":null,"expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":1}
+]"
+
+feature {NONE} -- PDF_BOX Test Support
+
+	page_json: STRING = "[
+{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"cell":{"parent":null,"sub_items":[{"parent":null,"sub_items":null,"text":"TEST_TEXT_FOR_TEXT_WIDGET","expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":1}],"expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":0},"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
+]"
+
+	report_json: STRING = "[
+
 ]"
 
 end

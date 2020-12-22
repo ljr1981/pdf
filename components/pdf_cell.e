@@ -84,7 +84,7 @@ feature -- Access
 
 feature -- Settings
 
-	set_items (o: like sub_items)
+	set_sub_items (o: like sub_items)
 			-- Set `sub_items' to items in `o'.
 		do
 			across
@@ -162,6 +162,20 @@ feature -- Settings
 			-- Disable `expandable'
 		do
 			expandable := False
+		end
+
+	enable_item_item
+			-- Enable `expandable'.
+		do
+			expandable := True
+		end
+
+	set_expandable (v: BOOLEAN)
+			-- Set `expandable' to `v'.
+		do
+			expandable := v
+		ensure
+			set: expandable = v
 		end
 
 feature -- Basic Operations
