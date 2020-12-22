@@ -43,7 +43,7 @@ feature {NONE} -- Initialization
 			--<Precursor>
 		do
 			Result := <<
-						"items",
+						"sub_items",
 						"offset_x",
 						"offset_y",
 						"height",
@@ -58,8 +58,8 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	items: ARRAYED_LIST [PDF_CELL]
-			-- A list of contained `items'.
+	sub_items: ARRAYED_LIST [PDF_CELL]
+			-- A list of contained `sub_items'.
 		attribute
 			create Result.make (10)
 		end
@@ -84,13 +84,13 @@ feature -- Access
 
 feature -- Settings
 
-	set_items (o: like items)
-			-- Set `items' to items in `o'.
+	set_items (o: like sub_items)
+			-- Set `sub_items' to items in `o'.
 		do
 			across
 				o as ic
 			loop
-				items.force (ic.item)
+				sub_items.force (ic.item)
 			end
 		end
 
@@ -166,20 +166,20 @@ feature -- Settings
 
 feature -- Basic Operations
 
-	extend (v: like Current)
-			--
+	extend (v: PDF_CELL)
+			-- Extend `v' into `sub_items' with Current as v.`parent'
 		require
-			enough: (items.count < limit) xor (limit = 0)
+			enough: (sub_items.count < limit) xor (limit = 0)
 		local
 			l_parent: WEAK_REFERENCE [PDF_CELL]
 		do
-			items.force (v)
+			sub_items.force (v)
 				-- Set Current a weak-reference'd parent.
 			create l_parent
 			l_parent.put (Current)
 			v.set_parent (l_parent)
 		ensure
-			extended: items.has (v)
+			extended: sub_items.has (v)
 		end
 
 end

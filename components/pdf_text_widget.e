@@ -18,6 +18,9 @@ class
 
 inherit
 	PDF_WIDGET
+		redefine
+			convertible_features
+		end
 
 
 	JSE_AWARE
@@ -38,7 +41,7 @@ feature {NONE} -- Initialization
 			True
 		do
 			check attached json_string_to_json_object (a_json) as al_object then
-				-- set_items (no_conversion)
+				-- set_sub_items (no_conversion)
 				set_offset_x (json_object_to_integer_32 ("offset_x", al_object))
 				set_offset_y (json_object_to_integer_32 ("offset_y", al_object))
 				set_height (json_object_to_integer_32 ("height", al_object))
@@ -49,6 +52,36 @@ feature {NONE} -- Initialization
 				set_limit (json_object_to_integer_32 ("limit", al_object))
 				-- set_parent (no_conversion)
 			end
+		end
+
+	convertible_features (a_current: ANY): ARRAY [STRING_8]
+			--<Precursor>
+		local
+			a: ARRAYED_LIST [STRING]
+		do
+			create a.make_from_array (Precursor (a_current))
+			a.force ("text")
+			Result := a.to_array
+--		ensure then
+--			Result.has ("text")
+		end
+
+feature -- Access
+
+	text: STRING_32
+			-- Widget `text'.
+		attribute
+			create Result.make_empty
+		end
+
+feature -- Setting
+
+	set_text (t: STRING_32)
+			-- Set `text' to `t'.
+		do
+			text := t
+		ensure
+			set: text.same_string (t)
 		end
 
 end

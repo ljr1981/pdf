@@ -106,6 +106,12 @@ feature -- Access
 
 	margin_right: INTEGER
 
+	cell: PDF_VERTICAL_BOX
+			--
+		attribute
+			create Result
+		end
+
 feature -- Settings
 
 	set_size (t: TUPLE [h, w: INTEGER])

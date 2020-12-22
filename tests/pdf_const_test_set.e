@@ -8,7 +8,7 @@ class
 	PDF_CONST_TEST_SET
 
 inherit
-	TEST_SET_SUPPORT
+	PDF_TEST_SET_SUPPORT
 
 feature -- Test routines
 

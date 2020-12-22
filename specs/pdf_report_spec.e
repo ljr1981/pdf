@@ -84,7 +84,9 @@ feature -- Basic Operations
 			file_name := a_file_name
 			page_height := US_8_by_11_page_height
 			page_width := US_8_by_11_page_width
-			
+			check attached json_string_to_json_object (a_json) as al_object then
+
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -115,6 +117,7 @@ feature {NONE} -- Implementation
 	surface: CAIRO_SURFACE_STRUCT_API
 			-- PDF Drawing Surface.
 		require
+			has_file_name: not file_name.is_empty
 			not_destroyed: not is_destroyed
 		once ("OBJECT")
 			Result := {CAIRO_PDF_FUNCTIONS}.cairo_pdf_surface_create(file_name, page_width, page_height)
