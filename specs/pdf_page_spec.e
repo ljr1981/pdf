@@ -6,6 +6,10 @@ class
 
 inherit
 	PDF_SPEC
+		redefine
+			default_create,
+			make_from_json_value
+		end
 
 create
 	default_create,
@@ -14,11 +18,26 @@ create
 
 feature {NONE} -- Initialization
 
+	default_create
+			--<Precursor>
+		do
+			Precursor
+			create cell
+		end
+
+	make_from_json_value (v: JSON_VALUE)
+			--<Precursor>
+		do
+			Precursor (v)
+			create cell
+		end
+
 	make_from_json (a_json: STRING)
 			--<Precursor>
 		require else
 			True
 		do
+			create cell
 			check attached json_string_to_json_object (a_json) as al_object then
 				set_name (json_object_to_string_attached ("name", al_object))
 				set_height (json_object_to_integer_32 ("height", al_object))
@@ -29,9 +48,6 @@ feature {NONE} -- Initialization
 				end
 				if attached {like font_face} json_array_to_eiffel_tuple (json_object_to_tuple_as_json_array ("font_face", al_object)) as al_tuple then
 					set_font_face (al_tuple)
-				end
-				if attached {like cell} json_array_to_eiffel_tuple (json_object_to_tuple_as_json_array ("cell", al_object)) as al_tuple then
-					extend (al_tuple)
 				end
 				set_font_size (json_object_to_integer_32 ("font_size", al_object))
 				set_margin_top (json_object_to_integer_32 ("margin_top", al_object))
@@ -45,7 +61,6 @@ feature {NONE} -- Initialization
 			--<Precursor>
 		do
 			Result := <<
-						create {JSON_METADATA}.make_text_default,
 						create {JSON_METADATA}.make_text_default,
 						create {JSON_METADATA}.make_text_default,
 						create {JSON_METADATA}.make_text_default,
@@ -74,8 +89,7 @@ feature {NONE} -- Initialization
 						"margin_top",
 						"margin_bottom",
 						"margin_left",
-						"margin_right",
-						"cell"
+						"margin_right"
 						>>
 		end
 
@@ -111,21 +125,10 @@ feature -- Access
 
 	margin_right: INTEGER
 
-	cell: PDF_VERTICAL_BOX
-			--
-		attribute
-			create Result
-		end
+	cell: EV_CELL
+			-- Every page has one `cell'.
 
 feature -- Settings
-
-	extend (c: like cell)
-			--
-		do
-			cell := c
-		ensure
-			set: cell ~ c
-		end
 
 	set_size (t: TUPLE [h, w: INTEGER])
 			-- Set `height' and `width'.
