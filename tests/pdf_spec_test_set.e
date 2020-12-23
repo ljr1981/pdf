@@ -101,15 +101,93 @@ feature -- Test routines
 			assert_strings_equal ("make_from_json", page_spec_json, l_spec.json_out)
 		end
 
-	pdf_cell_test
-			-- Test of PDF_CELL
+	pdf_EV_test
+			-- Low-level test using Eiffel Vision2 as basis for page layout.
+		note
+			testing: "covers/{PDF_FACTORY}.make_us_std_with_name",
+						"covers/{PDF_FACTORY}.page",
+						"covers/{PDF_FACTORY}.destroy",
+						"covers/{PDF_PAGE}.set_default_margins",
+						"covers/{PDF_PAGE}.set_current_x",
+						"covers/{PDF_PAGE}.set_current_y",
+						"covers/{PDF_PAGE}.apply_text",
+						"execution/isolated",
+						"execution/serial"
 		local
-			l_vbox: PDF_VERTICAL_BOX
+			l_win: EV_WINDOW
+			l_cell: EV_CELL
+				-- Margins
+			l_top, l_left, l_right, l_bottom: EV_CELL
+			l_mainbox: EV_VERTICAL_BOX
+			l_midbox: EV_HORIZONTAL_BOX
+				-- Boxes
+			l_vbox1,
+			l_vbox2,
+			l_vbox3: EV_VERTICAL_BOX
+			l_text1,
+			l_text2: EV_LABEL
+				-- PDF Page
+			l_factory: PDF_FACTORY
+			l_page: like {PDF_FACTORY}.page
 		do
-			create l_vbox
---			assert_strings_equal ("vbox_json", vbox_json, l_vbox.json_out)
+				-- Factory
+			create l_factory.make_us_std_with_name ("vbox1.pdf")
+			l_page := l_factory.page
+			l_page.set_default_margins
 
---			assert_strings_equal ("make_from_json_code", vbox_make_from_json_code_string, l_vbox.generated_make_from_json_code (l_vbox))
+				-- creation Content
+			create l_win
+			create l_cell
+			create l_top; create l_left; create l_right; create l_bottom
+			create l_mainbox; create l_midbox
+			create l_vbox1
+			create l_vbox2
+			create l_vbox3
+
+				-- Page structure
+			l_win.extend (l_cell)
+			l_cell.extend (l_mainbox)
+			l_mainbox.extend (l_top)
+			l_mainbox.extend (l_midbox)
+			l_mainbox.extend (l_bottom)
+			l_midbox.extend (l_left)
+			l_midbox.extend (l_vbox1)
+			l_midbox.extend (l_right)
+
+				-- Content boxes
+			l_vbox1.extend (l_vbox2)
+			l_vbox1.extend (l_vbox3)
+
+				-- Sizing
+			l_top.set_minimum_height (l_page.margin_top)
+			l_left.set_minimum_width (l_page.margin_left)
+			l_win.set_minimum_size (us_8_by_11_page_width, us_8_by_11_page_height)
+			l_midbox.set_minimum_size (us_8_by_11_page_width - l_page.margin_left - l_page.margin_right, us_8_by_11_page_height - l_page.margin_top - l_page.margin_bottom)
+
+				-- Text
+			create l_text1.make_with_text ("TEXT_1")
+			create l_text2.make_with_text ("TEXT_2")
+			l_vbox2.extend (l_text1)
+			l_vbox3.extend (l_text2)
+			l_win.set_position (0, 0)
+			l_win.show
+
+				-- Apply to PDF
+			l_page.set_current_x (l_text1.screen_x)
+			l_page.set_current_y (l_text1.screen_y + l_text1.font.height_in_points)
+			l_page.apply_text ("X: " + l_text1.screen_x.out + ", Y: " + l_text1.screen_y.out)
+
+			l_page.set_current_x (l_text2.screen_x)
+			l_page.set_current_y (l_text2.screen_y + l_text2.font.height_in_points)
+			l_page.apply_text ("X: " + l_text2.screen_x.out + ", Y: " + l_text2.screen_y.out)
+
+			l_factory.destroy
+
+			assert_integers_equal ("l_win_screen_x", 0, l_win.screen_x)
+			assert_integers_equal ("l_text1_screen_x", 193, l_text1.screen_x)
+			assert_integers_equal ("l_text1_screen_y", 19, l_text1.screen_y)
+			assert_integers_equal ("l_text2_screen_x", 193, l_text2.screen_x)
+			assert_integers_equal ("l_text2_screen_y", 403, l_text2.screen_y)
 		end
 
 	report_test_1
@@ -126,8 +204,6 @@ feature -- Test routines
 				]"
 		local
 			l_report: PDF_REPORT_SPEC
-			l_vbox: PDF_VERTICAL_BOX
-			l_text: PDF_TEXT_WIDGET
 		do
 			l_report := report_spec_2.twin
 			assert_strings_equal ("report_spec_2_json_string", report_spec_2_json_string, l_report.json_out)
