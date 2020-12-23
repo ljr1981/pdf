@@ -161,8 +161,8 @@ feature -- Test routines
 				-- Sizing
 			l_top.set_minimum_height (l_page.margin_top)
 			l_left.set_minimum_width (l_page.margin_left)
-			l_win.set_minimum_size (us_8_by_11_page_width, us_8_by_11_page_height)
-			l_midbox.set_minimum_size (us_8_by_11_page_width - l_page.margin_left - l_page.margin_right, us_8_by_11_page_height - l_page.margin_top - l_page.margin_bottom)
+			l_mainbox.set_minimum_size (us_8_by_11_page_width, us_8_by_11_page_height)
+			l_vbox1.set_minimum_size (us_8_by_11_page_width - l_page.margin_left - l_page.margin_right, us_8_by_11_page_height - l_page.margin_top - l_page.margin_bottom)
 
 				-- Text
 			create l_text1.make_with_text ("TEXT_1")
@@ -181,14 +181,50 @@ feature -- Test routines
 			l_page.set_current_y (l_text2.screen_y + l_text2.font.height_in_points)
 			l_page.apply_text ("X: " + l_text2.screen_x.out + ", Y: " + l_text2.screen_y.out)
 
+--			assert_integers_equal ("l_win_screen_x", 0, l_win.screen_x)
+--			assert_integers_equal ("l_text1_screen_x", 193, l_text1.screen_x)
+--			assert_integers_equal ("l_text1_screen_y", 19, l_text1.screen_y)
+--			assert_integers_equal ("l_text2_screen_x", 193, l_text2.screen_x)
+--			assert_integers_equal ("l_text2_screen_y", 403, l_text2.screen_y)
+
+			l_factory.next_page
+			l_page := l_factory.page
+
+			traverse (l_mainbox, l_page)
+
 			l_factory.destroy
 
-			assert_integers_equal ("l_win_screen_x", 0, l_win.screen_x)
-			assert_integers_equal ("l_text1_screen_x", 193, l_text1.screen_x)
-			assert_integers_equal ("l_text1_screen_y", 19, l_text1.screen_y)
-			assert_integers_equal ("l_text2_screen_x", 193, l_text2.screen_x)
-			assert_integers_equal ("l_text2_screen_y", 403, l_text2.screen_y)
 		end
+
+feature {NONE} -- Support
+
+	traverse (a_box: EV_BOX; a_page: PDF_PAGE)
+			--
+		local
+			l_text: STRING_32
+		do
+			across
+				a_box.new_cursor as ic
+			loop
+				a_page.set_current_x (ic.item.screen_x)
+				a_page.set_current_y (ic.item.screen_y)
+				l_text := ""
+				if attached {EV_TEXT_COMPONENT} ic.item as al_component then
+					l_text := al_component.text
+				elseif attached {EV_LABEL} ic.item as al_label then
+					l_text := al_label.text
+					a_page.set_current_y (al_label.screen_y + al_label.font.height_in_points)
+				end
+				if not l_text.is_empty then
+					a_page.apply_text (l_text)
+				end
+				if attached {EV_BOX} ic.item as al_box then
+					traverse (al_box, a_page)
+				end
+			end
+		end
+
+feature -- Test routines
 
 	report_test_1
 			-- Build a report by hand (later using json-data).
