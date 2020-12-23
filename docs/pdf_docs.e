@@ -5,7 +5,7 @@ class
 	PDF_DOCS
 
 note
-	design: "[
+	design_no_1: "[
 		PDF_REPORT ::= {PDF_PAGE_SPEC}+
 	
 		PDF_PAGE_SPEC ::= {PDF_CELL}+
@@ -32,6 +32,40 @@ note
 		PDF_TEXT_WIDGET inherits PDF_LINE_WIDGET. PDF_BOX items contain (possibly clipped) text.
 		PDF_IMAGE_WIDGET inherits PDF_LINE_WIDGET. PDF_BOX items contain (possibly clipped) graphics (e.g. PNG, JPG, SVG, etc).
 				]"
+	design_no_2: "[
+		The latest design reuses the facilities of Eiffel Vision2. EV already knows how to build
+		self-positioning and self-expanding boxes and then putting "printable" (screen) components
+		in them, where they are self-arranging. By reusing this code, we capitalize on its well
+		tested and exercised facilities, where we only need to then add any further "specifications"
+		where printed reports (PDFs) are concerned (regardless of printed-to-file or streamed-to-client).
+		
+		For example: Unlike screens (computer displays)--printed reports have definite limits in printable
+		area and that area may change from page to page (e.g. size, orientation, or both).
+		
+		For example: Printed text and other "widgets" can rotate, whereas EV widgets generally do not
+		have this capability. So, adding that and then translating that to paper (PDF) will be the
+		challenge of this library.
+		
+		HUMBLE-BEGINNINGS: For the moment, it will be enough to get properly positioned text on a
+		page of the right font (face), font-size (points), font-slant (italic), and font-weight (bold).
+		To this end, the following are suggestion(s) for a basic workflow.
+		
+		1. Define a page-layout specification (e.g. vertical and horizontal widget-boxes, and page-specs)
+		2. Define a page-widget specification (e.g. labels, lines, boxes)
+		3. Define report-data (e.g. data-item points to display-widget and layout-widget)
+		
+		NOTE-THAT--as layout-widgets (vert/horz-boxes) "fill-up" and finally "get-full", it is
+		suggested to use a visible "marker-widget" that is repeated tested for "is-visible". When
+		it becomes "is-visible"=False, then the layout-widget "is-full" and stops taking
+		page-widgets (printable-widgets) with related report-data items. Therefore, the page is
+		ended-off, a new page created, and printing continues.
+		
+		IDEA--some of this may have behaviors that mimic HTML elements being drawn on a web-page,
+		where the web-page is predetermined size (limits) and static, once its elements are "drawn".
+		
+		IDEA--this actually leads to wanting to know if HTML can be directly consumed and given to
+		the PDF document and rendered on a page-by-page basis?
+		]"
 	process: "[
 		Based upon the design (above), the processing-step are:
 		

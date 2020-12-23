@@ -198,7 +198,18 @@ feature -- Test routines
 feature {NONE} -- Support
 
 	traverse (a_box: EV_BOX; a_page: PDF_PAGE)
-			--
+			-- Iterate into `a_box', printing its items on `a_page'.
+		note
+			design: "[
+				A new version of this is coming! The idea will be to iterate
+				over all of the items contained in `a_box' and then apply them
+				to `a_page' using predefined functions, possibly agents. All
+				of this will most likely be held in a PDF_REPORT_WRITER and a
+				PDF_REPORT_STREAMER set of classes. They will get code from
+				the PDF_FACTORY, perhaps reusing it (perhaps not). Either way,
+				the job of report writing/streaming will be held at a very
+				high-level away from Cairo, where this all began (see wrap_cairo).
+				]"
 		local
 			l_text: detachable STRING_32
 		do

@@ -4,6 +4,9 @@ note
 class
 	PDF_CONST
 
+inherit
+	PDF_DOCS
+
 feature -- Access
 
 	dpi: INTEGER = 72
