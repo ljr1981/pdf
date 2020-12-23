@@ -121,10 +121,11 @@ feature -- Constants
 	Font_normal: TUPLE [name: STRING; slant, weight: INTEGER]
 			-- A normal Sans font face specification.
 		once
-			Result := [Font_face_sans, Font_slant_normal, Font_weight_normal]
+--			Result := [Font_face_sans, Font_slant_normal, Font_weight_normal]
+			Result := ["Courier", Font_slant_normal, Font_weight_normal]
 		end
 
-	Default_font_size: REAL = 20.0
+	Default_font_size: REAL = 12.0
 			-- The normal or default font point size.
 
 feature -- Settings

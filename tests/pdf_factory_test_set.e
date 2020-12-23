@@ -64,12 +64,12 @@ feature -- Test routines
 			create l_factory.make_us_std_with_name ("test.pdf")
 			l_page := l_factory.page
 
-			assert_equal ("x_y", [10, 35], [l_page.current_x, l_page.current_y])
+			assert_equal ("x_y", [10, 27], [l_page.current_x, l_page.current_y])
 			l_page.apply_text ("Line #1 at top-left")
 			l_page.crlf
 			l_page.crlf
 			l_page.indent_one
-			assert_equal ("x_y_2", [60, 75], [l_page.current_x, l_page.current_y])
+			assert_equal ("x_y_2", [60, 51], [l_page.current_x, l_page.current_y])
 			l_page.apply_text ("Line #3 indented one over.")
 			l_page.down_n_lines (3)
 			l_page.crlf

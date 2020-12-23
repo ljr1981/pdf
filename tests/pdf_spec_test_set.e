@@ -114,6 +114,7 @@ feature -- Test routines
 						"execution/isolated",
 						"execution/serial"
 		local
+			x: CAIRO_SVG_FUNCTIONS
 			l_win: EV_WINDOW
 			l_cell: EV_CELL
 				-- Margins
