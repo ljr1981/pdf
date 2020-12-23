@@ -181,16 +181,16 @@ feature -- Test routines
 			l_page.set_current_y (l_text2.screen_y + l_text2.font.height_in_points)
 			l_page.apply_text ("X: " + l_text2.screen_x.out + ", Y: " + l_text2.screen_y.out)
 
---			assert_integers_equal ("l_win_screen_x", 0, l_win.screen_x)
---			assert_integers_equal ("l_text1_screen_x", 193, l_text1.screen_x)
---			assert_integers_equal ("l_text1_screen_y", 19, l_text1.screen_y)
---			assert_integers_equal ("l_text2_screen_x", 193, l_text2.screen_x)
---			assert_integers_equal ("l_text2_screen_y", 403, l_text2.screen_y)
-
+				-- Now, do the same thing above, except by calling `traverse', which
+				--	will iterate down through the `l_mainbox' looking for things to print!
 			l_factory.next_page
 			l_page := l_factory.page
 
 			traverse (l_mainbox, l_page)
+				-- Just to prove that we have the correct "edge"
+			l_page.set_current_x (l_vbox1.screen_x)
+			l_page.set_current_y (l_vbox1.screen_y + 50)
+			l_page.apply_text ("| <-- interior vbox left-edge.")
 
 			l_factory.destroy
 
