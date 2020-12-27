@@ -157,7 +157,7 @@ feature -- Status Report
 	has_cr: BOOLEAN
 			-- has `cr' been created yet?
 		do
-			Result := attached cr
+			Result := attached last_cr
 		end
 
 feature -- Factory Products
