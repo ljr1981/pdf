@@ -55,6 +55,9 @@ feature {NONE} -- Initialization
 		do
 			surface := new_surface (a_pdf_file_name, a_width, a_height)
 			last_cr := cr
+		ensure
+			has_surface: has_surface
+			has_cr: has_cr
 		end
 
 	metadata_refreshed (a_current: ANY): ARRAY [JSON_METADATA]
@@ -78,6 +81,10 @@ feature -- Data Loading
 	load_data (a_json: STRING)
 			-- `load_data' as `a_json' string.
 		note
+			process: "[
+				1. load data from `a_json'
+				2. validate data against page/box/widget namespace specs in page-specs
+				]"
 			data_structure: "[
 				Data ::= '{' {Datum}+ '}'
 				
@@ -87,6 +94,9 @@ feature -- Data Loading
 
 				Name_space ::= 'namespace' ':' '[' [Box_spec_name ','] Widget_spec_name ']'
 				]"
+		require
+			not_has_surface: not has_surface 	-- call `load_data' before creating `surface' and `cr' instances.
+			not_has_cr: not has_cr				-- same
 		do
 			check valid_json: attached json_string_to_json_object (a_json) as al_data then
 				last_data_json := a_json
@@ -96,6 +106,8 @@ feature -- Data Loading
 					-- each `item' ...
 				⟲
 			end
+		ensure
+			-- is data validated against page-spec(s)?
 		end
 
 	last_data_json_object: detachable JSON_OBJECT
@@ -177,12 +189,18 @@ feature -- Status Report
 
 feature -- Factory Products
 
-	page: attached like current_cr_page
-			-- An attached version of `current_cr_page' as `page'.
+	current_cr_page_attached: attached like current_cr_page
+			-- An attached version of `current_cr_page' as `current_cr_page_attached'.
+		require
+			has_surface: has_surface
+			has_cr: has_cr
 		do
 			check has_current_page: attached current_cr_page as al_result then
 				Result := al_result
 			end
+		ensure
+			has_surface: has_surface
+			has_cr: has_cr
 		end
 
 	current_cr_page: detachable PDF_PAGE
@@ -192,20 +210,30 @@ feature -- Factory Products
 			-- Make a `first_cr_page' for current PDF.
 		require
 			no_pages: not is_first_page_created
+			has_surface: has_surface
+			has_cr: has_cr
 		do
 			page_make_with_cr
 			is_first_page_created := True
 		ensure
 			is_first_page_created = True
+			has_surface: has_surface
+			has_cr: has_cr
 		end
 
 	next_cr_page
 			-- Make `next_cr_page' for current PDF.
 		require
 			is_first_page_created
+			has_surface: has_surface
+			has_cr: has_cr
 		do
 			{CAIRO_FUNCTIONS}.cairo_show_page(cr)
 			page_make_with_cr
+		ensure
+			is_first_page_created
+			has_surface: has_surface
+			has_cr: has_cr
 		end
 
 feature -- Access: JSON-able
