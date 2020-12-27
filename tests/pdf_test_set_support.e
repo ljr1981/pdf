@@ -1,5 +1,6 @@
 note
 	description: "Summary description for {PDF_TEST_SUPPORT_CONST}."
+	EIS: "name=json_prettifier", "src=https://jsonparser.org/"
 
 deferred class
 	PDF_TEST_SET_SUPPORT
@@ -143,12 +144,93 @@ feature {NONE} -- PDF_WIDGET Support
 
 feature {NONE} -- PDF_BOX Test Support
 
-	page_json: STRING = "[
-{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"cell":{"sub_items":[{"sub_items":null,"parent":null,"text":"TEST_TEXT_FOR_TEXT_WIDGET","expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":1}],"parent":null,"expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":0},"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
+	page_json_with_cell_items: STRING
+			-- A {PDF_PAGE_SPEC} json string with partial-`cell' data.
+		note
+			EIS: "name=json_parser", "src=https://jsonparser.org/"
+		once
+			Result := "[
+{
+  "name": "page_spec_1",
+  "font_color": [
+    0,
+    0,
+    0
+  ],
+  "font_face": [
+    "Sans",
+    0,
+    0
+  ],
+  "cell": {
+    "sub_items": [
+      {
+        "sub_items": null,
+        "parent": null,
+        "text": "TEST_TEXT_FOR_TEXT_WIDGET",
+        "expandable": true,
+        "offset_x": 0,
+        "offset_y": 0,
+        "height": 0,
+        "width": 0,
+        "inside_border_padding": 0,
+        "outside_border_padding": 0,
+        "limit": 1
+      }
+    ],
+    "parent": null,
+    "expandable": true,
+    "offset_x": 0,
+    "offset_y": 0,
+    "height": 0,
+    "width": 0,
+    "inside_border_padding": 0,
+    "outside_border_padding": 0,
+    "limit": 0
+  },
+  "height": 792,
+  "width": 612,
+  "indent_size": 50,
+  "font_size": 10,
+  "margin_top": 16,
+  "margin_bottom": 13,
+  "margin_left": 11,
+  "margin_right": 11
+}
+]"
+	end
+
+	report_spec_json: STRING = "[
+{"name":"MY_REPORT_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 
-	report_json: STRING = "[
-{"name":"MY_REPORT_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+	report_spec_json_prettified: STRING = "[
+{
+  "name": "MY_REPORT_1",
+  "page_specs": [
+    {
+      "name": "page_spec_1",
+      "font_color": [
+        0,
+        0,
+        0
+      ],
+      "font_face": [
+        "Sans",
+        0,
+        0
+      ],
+      "height": 792,
+      "width": 612,
+      "indent_size": 50,
+      "font_size": 10,
+      "margin_top": 16,
+      "margin_bottom": 13,
+      "margin_left": 11,
+      "margin_right": 11
+    }
+  ]
+}
 ]"
 
 end
