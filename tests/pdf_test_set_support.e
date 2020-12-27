@@ -38,9 +38,16 @@ end
 
 ]"
 
-	page_spec_json: STRING = "[
+	frozen page_spec_json: STRING
+			-- Potential {PDF_PAGE_SPEC} json.
+		note
+			not_prettified: "because it is used to test against `emittted' json."
+			EIS: "name=json_parser", "src=https://jsonparser.org/"
+		once
+			Result := "[
 {"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
 ]"
+		end
 
 	frozen page_spec_1: PDF_PAGE_SPEC
 			-- Example #1 of a page spec.
@@ -82,9 +89,16 @@ end
 			Result.page_specs.force (page_spec_1)
 		end
 
-	report_spec_1_json: STRING = "[
+	frozen report_spec_1_json: STRING
+			-- Potential {PDF_REPORT_SPEC} json string.
+		note
+			not_prettified: "because it is used to test against `emittted' json."
+			EIS: "name=json_parser", "src=https://jsonparser.org/"
+		once
+			Result := "[
 {"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
+		end
 
 	report_spec_1_make_from_json_code_string: STRING = "[
 check attached json_string_to_json_object (a_json) as al_object then
@@ -94,12 +108,23 @@ end
 
 ]"
 
-	report_spec_2_json_string: STRING = "[
+	frozen report_spec_2_json_string: STRING
+			-- Possible {PDF_REPORT_SPEC} json
+		note
+			not_prettified: "because it is used to test against `emittted' json."
+			EIS: "name=json_parser", "src=https://jsonparser.org/"
+		once
+			Result := "[
 {"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11},{"name":"page_spec_2","font_color":[0,0,0],"font_face":["Sans",0,0],"height":612,"width":792,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
+		end
 
-		-- Test data in JSON format ...
-	report_json_data_string: STRING = "[
+	report_json_data_string: STRING
+			-- Possible {PDF_REPORT_SPEC} json
+		note
+			EIS: "name=json_parser", "src=https://jsonparser.org/"
+		once
+			Result := "[
 {
 	"name": "report_1_name",
 	"data": %"[
@@ -107,6 +132,7 @@ end
 				]%"
 }
 ]"
+		end
 
 	frozen report_spec_2: PDF_REPORT_SPEC
 			-- Report spec #2
