@@ -150,6 +150,13 @@ feature -- Settings
 			{CAIRO_FUNCTIONS}.cairo_select_font_face (cr, a_font_spec.name, a_font_spec.slant, a_font_spec.weight)
 		end
 
+	set_font_name (a_font_name: STRING)
+			-- Set the font face with `a_font_name'.
+		do
+			font_face := [a_font_name, font_face.slant, font_face.weight]
+			set_font_face (font_face)
+		end
+
 	set_font_size (a_size: REAL)
 			-- Set the font size to `a_size' points on `cr'.
 		do

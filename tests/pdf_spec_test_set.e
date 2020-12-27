@@ -71,8 +71,9 @@ feature -- Test routines
 			-- Test {PDF_PAGE_SPEC}
 		note
 			testing: "covers/{PDF_PAGE_SPEC}.make_from_json",
-			"execution/isolated",
-			"execution/serial"
+						"covers/{PDF_PAGE_SPEC}.json_out",
+						"execution/isolated",
+						"execution/serial"
 		local
 			l_spec: PDF_REPORT_SPEC
 		do
@@ -92,8 +93,9 @@ feature -- Test routines
 			-- Test {PDF_PAGE_SPEC}
 		note
 			testing: "covers/{PDF_PAGE_SPEC}.make_from_json",
-			"execution/isolated",
-			"execution/serial"
+						"covers/{PDF_PAGE_SPEC}.json_out",
+						"execution/isolated",
+						"execution/serial"
 		local
 			l_spec: PDF_PAGE_SPEC
 		do
@@ -192,6 +194,8 @@ feature -- Test routines
 
 			l_factory.next_page				-- Create a new page from the "factory".
 			l_page := l_factory.page		-- Set our page
+			l_page.set_font_name ("Courier")-- Prove we can reset font-name
+			l_page.set_font_size (10.8)		--	... and the point-size
 			traverse (l_mainbox, l_page)	-- Iterate "mainbox", printing items on "page".
 											--	(this replaces code above in "Apply to PDF")
 
