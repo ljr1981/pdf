@@ -117,9 +117,27 @@ end
 			Result.page_specs.force (page_spec_2)
 		end
 
-	vbox_json: STRING = "[
-{"items":null,"parent":null,"expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":0}
+	vbox_json: STRING
+			-- Potential data representing an {EV_VERTICAL_BOX} layout.
+		note
+			EIS: "name=json_parser", "src=https://jsonparser.org/"
+		once
+			Result := "[
+{
+  "items": null,
+  "parent": null,
+  "expandable": true,
+  "offset_x": 0,
+  "offset_y": 0,
+  "height": 0,
+  "width": 0,
+  "inside_border_padding": 0,
+  "outside_border_padding": 0,
+  "limit": 0
+}
 ]"
+		end
+
  	vbox_make_from_json_code_string: STRING = "[
 check attached json_string_to_json_object (a_json) as al_object then
 	set_items (no_conversion)
@@ -138,9 +156,27 @@ end
 
 feature {NONE} -- PDF_WIDGET Support
 
-	text_widget_default_json: STRING = "[
-{"sub_items":null,"parent":null,"text":null,"expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":1}
+	text_widget_default_json: STRING
+			-- Potential data representing an {EV_LABEL} text-widget.
+		note
+			EIS: "name=json_parser", "src=https://jsonparser.org/"
+		once
+			Result := "[
+{
+  "sub_items": null,
+  "parent": null,
+  "text": null,
+  "expandable": true,
+  "offset_x": 0,
+  "offset_y": 0,
+  "height": 0,
+  "width": 0,
+  "inside_border_padding": 0,
+  "outside_border_padding": 0,
+  "limit": 1
+}
 ]"
+		end
 
 feature {NONE} -- PDF_BOX Test Support
 
