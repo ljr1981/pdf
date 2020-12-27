@@ -238,6 +238,12 @@ feature -- Factory Products
 
 feature -- Access: JSON-able
 
+	report_spec_attached: attached like report_spec
+			-- Attached version of `report_spec'.
+		do
+			check attached report_spec as al_result then Result := al_result end
+		end
+
 	report_spec: detachable PDF_REPORT_SPEC
 			-- Possible repor specification.
 			--	(usually coming from JSON spec)

@@ -34,8 +34,13 @@ feature -- Test routines
 			l_writer.destroy
 
 		-- Load {PDF_REPORT_SPEC} specification
-			create l_writer.make_from_json (report_spec_1_json)
-			
+			create l_writer.make_from_json (report_spec_2.json_out)
+			assert_32 ("has_report_spec", attached l_writer.report_spec)
+			assert_integers_equal ("has_two_page_specs", 2, l_writer.report_spec_attached.page_specs.count)
+			check attached l_writer.report_spec_attached.page_specs [1] as al_page_spec_1 then
+				assert_strings_equal ("page_spec_1_name", "page_spec_1", al_page_spec_1.name)
+			end
+
 			l_writer.load_data (report_spec_1_data_json)
 			assert_integers_equal ("three_datum", 3, l_writer.last_data_json_object_attached.count)
 			if attached l_writer.last_data_json_object_attached.item (create {JSON_STRING}.make_from_string ("d1")) as al_value then

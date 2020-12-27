@@ -28,6 +28,7 @@ feature {NONE} -- Initialization
 	make_from_json_value (v: JSON_VALUE)
 			--<Precursor>
 		do
+			default_create
 			Precursor (v)
 			create cell
 		end
@@ -37,7 +38,7 @@ feature {NONE} -- Initialization
 		require else
 			True
 		do
-			create cell
+			default_create
 			check attached json_string_to_json_object (a_json) as al_object then
 				set_name (json_object_to_string_attached ("name", al_object))
 				set_height (json_object_to_integer_32 ("height", al_object))
