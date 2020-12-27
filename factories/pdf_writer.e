@@ -1,28 +1,109 @@
-note
+﻿note
 	description: "Facilities for writing PDF files"
 
 class
 	PDF_WRITER
 
 inherit
-	PDF_CAIRO_FUNCTIONS
+	JSE_AWARE				-- How to be a JSON_TRANSFORMABLE thing
 
-	PDF_CONST
+	PDF_CAIRO_FUNCTIONS		-- How to interop with Cairo
 
-	DISPOSABLE
+	PDF_CONST				-- Some useful constants
+
+	DISPOSABLE				-- Ensure what happens when destroyed/disposed
 
 create
-	default_create,
-	make
+	default_create,			-- An empty PDF Writer
+	make,					-- A PDF Writer with name and page-sizing
+	make_from_json,			-- A PDF Writer spec'd-out from json-string spec
+	make_from_json_value	-- A PDF Writer conforming to a passed {JSON_VALUE} as spec
 
 feature {NONE} -- Initialization
 
+	make_from_json (a_json: STRING)
+			--<Precursor>
+		require else
+			True
+		do
+			check attached {JSON_OBJECT} json_string_to_json_object (a_json) as al_object then
+			-- presently, al_object = {PDF_REPORT_SPEC} as {JSON_OBJECT}
+				create report_spec.make_from_json_value (al_object)
+			end
+		end
+
 	make (a_pdf_file_name: STRING; a_height, a_width: INTEGER)
 			-- Create Current with file-name and height/width.
+		require
+			not_has_surface : not has_surface
+			not_has_cr: not has_cr
 		do
 			surface := new_surface (a_pdf_file_name, a_width, a_height)
 			last_cr := cr
 		end
+
+	metadata_refreshed (a_current: ANY): ARRAY [JSON_METADATA]
+			--<Precursor>
+		do
+			Result := <<
+						create {JSON_METADATA}.make_text_default
+						>>
+		end
+
+	convertible_features (a_current: ANY): ARRAY [STRING]
+			--<Precursor>
+		do
+			Result := <<
+						"report_spec"
+						>>
+		end
+
+feature -- Data Loading
+
+	load_data (a_json: STRING)
+			-- `load_data' as `a_json' string.
+		note
+			data_structure: "[
+				Data ::= '{' {Datum}+ '}'
+				
+				Datum ::= '{' Identifier ',' Name_space ',' Data_item '}'
+				
+				Identifier ::= 'd' Serial_number
+
+				Name_space ::= 'namespace' ':' '[' [Box_spec_name ','] Widget_spec_name ']'
+				]"
+		do
+			check valid_json: attached json_string_to_json_object (a_json) as al_data then
+				last_data_json := a_json
+				last_data_json_object := al_data
+				-- we now have valid json-data to start plugging into our report page-layouts.
+				⟳ item: al_data ¦
+					-- each `item' ...
+				⟲
+			end
+		end
+
+	last_data_json_object: detachable JSON_OBJECT
+			-- Last valid json-data object from `load_data'.
+
+	last_data_json_object_attached: attached like last_data_json_object
+			-- Attached version of `last_data_json_object'.
+		do
+			check attached last_data_json_object as al_result then Result := al_result end
+		end
+
+	last_data_json: detachable STRING
+			-- Last valid json-data string from `load_data'.
+
+	last_data_json_attached: attached like last_data_json
+			-- Attached version of `last_data_json'.
+		do
+			check has_data: attached last_data_json as al_result then Result := al_result end
+		end
+
+feature -- Data Processing (report generation in-memory)
+
+feature -- Report finalization
 
 feature -- Cleanup Operations
 
@@ -65,42 +146,70 @@ feature -- Status Report
 		end
 
 	is_first_page_created: BOOLEAN
-			-- Has the `first_page' been created?
+			-- Has the `first_cr_page' been created?
+
+	has_surface: BOOLEAN
+			-- Has `surface' been created yet?
+		do
+			Result := attached surface
+		end
+
+	has_cr: BOOLEAN
+			-- has `cr' been created yet?
+		do
+			Result := attached cr
+		end
 
 feature -- Factory Products
 
-	page: attached like current_page
-			-- An attached version of `current_page' as `page'.
+	page: attached like current_cr_page
+			-- An attached version of `current_cr_page' as `page'.
 		do
-			check has_current_page: attached current_page as al_result then
+			check has_current_page: attached current_cr_page as al_result then
 				Result := al_result
 			end
 		end
 
-	current_page: detachable PDF_PAGE
-			-- A possible `current_page', depending on `first_page' being called first.
+	current_cr_page: detachable PDF_PAGE
+			-- A possible `current_cr_page', depending on `first_cr_page' being called first.
 
-	first_page
-			-- Make a `first_page' for current PDF.
+	first_cr_page
+			-- Make a `first_cr_page' for current PDF.
 		require
 			no_pages: not is_first_page_created
 		do
-			page_make
+			page_make_with_cr
 			is_first_page_created := True
 		ensure
 			is_first_page_created = True
 		end
 
-	next_page
-			-- Make `next_page' for current PDF.
+	next_cr_page
+			-- Make `next_cr_page' for current PDF.
 		require
 			is_first_page_created
 		do
 			{CAIRO_FUNCTIONS}.cairo_show_page(cr)
-			page_make
+			page_make_with_cr
 		end
 
-feature -- Access
+feature -- Access: JSON-able
+
+	report_spec: detachable PDF_REPORT_SPEC
+			-- Possible repor specification.
+			--	(usually coming from JSON spec)
+
+feature -- Access: Generated
+
+	pages: ARRAYED_LIST [PDF_PAGE]
+			-- The `pages' generated from `last_data'
+		require
+			has_data: attached last_data_json_object
+		attribute
+			create Result.make (last_data_json_object_attached.count)
+		ensure
+			enough: Result.capacity = last_data_json_object_attached.count
+		end
 
 	page_height: INTEGER assign set_page_height
 			-- The `page_height' in points.
@@ -110,11 +219,21 @@ feature -- Access
 
 	page_count: INTEGER
 			-- What is the current `page_count'?
+		require
+			has_surface: has_surface
+			has_cr: has_cr
+		do
+			if not attached last_data_json_object then
+				Result := 0
+			else
+				Result := pages.count
+			end
+		end
 
 feature -- Settings
 
 	set_page_height (a_value: INTEGER)
-			--
+			-- Set current `page_height' to `a_value' (in points)
 		require
 			not_destroyed: not is_destroyed
 		do
@@ -124,7 +243,7 @@ feature -- Settings
 		end
 
 	set_page_width (a_value: INTEGER)
-			--
+			-- Set current `page_width' to `a_value' (in points)
 		require
 			not_destroyed: not is_destroyed
 		do
@@ -135,10 +254,15 @@ feature -- Settings
 
 feature {NONE} -- Implementation: Pagination
 
-	page_make
+	page_make_with_cr
+			-- Make a new `current_cr_page' item.
+		require
+			has_surface: has_surface
+			has_cr: has_cr
 		do
-			create current_page.make (cr, [page_height, page_width])
-			page_count := page_count + 1
+			create current_cr_page.make (cr, [page_height, page_width])
+		ensure
+			same_page: attached current_cr_page
 		end
 
 feature {NONE} -- Implementation: Status Report
@@ -155,10 +279,11 @@ feature {NONE} -- Implementation
 			-- Create a `new_surface' targeted to `a_name' file with `a_width' and `a_height'.
 		require
 			not_destroyed: not is_destroyed
+			not_has_surface: not has_surface
 		once ("OBJECT")
 			Result := {CAIRO_PDF_FUNCTIONS}.cairo_pdf_surface_create(a_name, a_width, a_height)
 		ensure
-			has_surface: {CAIRO_FUNCTIONS}.cairo_surface_status (Result) = {CAIRO_STATUS_ENUM_API}.cairo_status_success
+			success: {CAIRO_FUNCTIONS}.cairo_surface_status (Result) = {CAIRO_STATUS_ENUM_API}.cairo_status_success
 		end
 
 	last_cr: detachable like cr
@@ -195,7 +320,7 @@ feature {NONE} -- Implementation
 				]"
 		require
 			not_destroyed: not is_destroyed
-			has_surface: attached surface
+			has_surface: has_surface
 		once ("OBJECT")
 			check has_surface_then_cr: attached surface as al_surface and then
 				attached {CAIRO_FUNCTIONS}.cairo_create (al_surface) as al_result and then
