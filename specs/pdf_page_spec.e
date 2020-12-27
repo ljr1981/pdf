@@ -125,8 +125,96 @@ feature -- Access
 
 	margin_right: INTEGER
 
+feature -- Layout
+
 	cell: EV_CELL
 			-- Every page has one `cell'.
+
+	cbox: EV_VERTICAL_BOX
+			-- Content (i.e. `cbox') box.
+		attribute
+			create Result
+			Result.set_data ("cbox")
+		end
+
+	prep_cell
+			-- Prepare `cbox' in `cell' for Content.
+		local
+			l_mbox: EV_VERTICAL_BOX -- Main-box (entire page)
+			l_midbox: EV_HORIZONTAL_BOX -- Holder of left and right margins with `cbox' sandwiched between them.
+			l_top, l_left, l_right, l_bottom: EV_CELL -- Margins
+		do
+		-- create main-box in cell
+			create l_mbox; cell.extend (l_mbox)
+		-- add header (top)
+			create l_top; l_mbox.extend (l_top); l_mbox.disable_item_expand (l_top); l_top.set_minimum_height (margin_top)
+		-- add mid-box (left, cbox, right)
+			create l_midbox; l_mbox.extend (l_midbox)
+			create l_left; l_midbox.extend (l_left); l_midbox.disable_item_expand (l_left); l_left.set_minimum_width (margin_left)
+			l_midbox.extend (cbox)
+			create l_right; l_midbox.extend (l_right); l_midbox.disable_item_expand (l_right); l_right.set_minimum_width (margin_right)
+		-- add footer (bottom)
+			create l_bottom; l_mbox.extend (l_bottom); l_mbox.disable_item_expand (l_bottom); l_bottom.set_minimum_height (margin_bottom) -- add header (top)		
+		end
+
+	new_box (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER; a_is_horizontal: BOOLEAN): EV_BOX
+			-- `new_box' of `a_name' to `a_parent' (if named, otherwise `cbox') with `a_min_size'.
+		note
+			design: "[
+				Setting `a_min_size' > 0 indicates that the caller wants to `disable_item_expand' and
+				collapse the `new_box' inside the `a_parent' box to `a_min_size'. Otherwise,
+				let the Result
+				]"
+		local
+			l_parent_box: EV_BOX
+		do
+		-- get a ref to the parent (or `cbox')
+			if attached a_parent as al_parent then
+				check attached cbox_child (Void, al_parent) as al_parent_box then
+					l_parent_box := al_parent_box
+				end
+			else
+				check attached cbox_child (Void, "cbox") as al_parent_box then
+					l_parent_box := al_parent_box
+				end
+			end
+		-- create new box using `a_is_horizontal' or not
+			if a_is_horizontal then
+				create {EV_HORIZONTAL_BOX} Result
+			else
+				create {EV_VERTICAL_BOX} Result
+			end
+		-- handle `a_min_size' and `disable_item_expand'
+			if a_min_size > 0 then
+				if attached {EV_VERTICAL_BOX} l_parent_box as al_vert then
+					Result.set_minimum_height (a_min_size)
+				elseif attached {EV_HORIZONTAL_BOX} l_parent_box as al_horz then
+					Result.set_minimum_width (a_min_size)
+				end
+				l_parent_box.disable_item_expand (Result)
+			end
+		-- put Result in `a_parent'
+			l_parent_box.extend (Result)
+		end
+
+	cbox_child (a_box: detachable EV_BOX; a_name: STRING): detachable EV_BOX
+			-- Look for `a_box' named `a_name' starting in `cbox'.
+		local
+			l_target_box: EV_BOX
+		do
+			l_target_box := if attached a_box then a_box else cbox end
+			across
+				l_target_box.new_cursor as ic
+			loop
+				if attached {EV_BOX} ic.item as al_box and then attached {STRING} al_box.data as al_name then
+					if al_name.same_string (a_name) then
+						Result := al_box
+					else
+						Result := cbox_child (al_box, a_name)
+					end
+				end
+			end
+		end
 
 feature -- Settings
 

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "[
 		Eiffel tests that can be executed by testing tool.
 	]"
@@ -34,15 +34,12 @@ feature -- Test routines
 			l_array := (1 |..| 3).as_array
 
 				-- Start adding items to successive TUPLE instances using plus
-			across
-				l_array as ic
-			from
-				create l_tuple -- First, create our base TUPLE
-			loop -- Then--for each `l_array' item of type ANY ...
-				if attached l_tuple then -- Do an attachment check to satisfy Void-safety ...
-					l_tuple := l_tuple.plus (ic.item) -- Use the facility of `{TUPLE}.plus' to make a new TUPLE, replacing our old one
+			create l_tuple 								-- First, create our base TUPLE
+			⟳ item:l_array ¦ 							-- Then--for each array item ...
+				check attached l_tuple then				-- Ensure `l_tuple' is attached
+					l_tuple := l_tuple.plus (item)		-- Add the array item
 				end
-			end -- Do this until `l_array' is exhausted.
+			⟲ 											-- Do this until `l_array' is exhausted.
 
 				-- Test to ensure each item is what we expect ...
 				-- In this project SCOOP is turned on, so we care about the separate-ness
@@ -57,6 +54,17 @@ feature -- Test routines
 					end
 				end
 			end
+
+			assert_32 ("tuple_items_equal_array_items", across (1 |..| l_array.count) as ic all
+															attached l_tuple as al_tuple and then
+															attached al_tuple.item (ic.item) as al_item
+															and then al_item = ic.item
+														end)
+
+			assert_32 ("tuple_items_equal_array_items", ∀ ic: (1 |..| l_array.count) ¦
+																	attached l_tuple as al_tuple and then
+																	attached al_tuple.item (ic) as al_item
+																	and then al_item = ic)
 		end
 
 	report_spec_test
@@ -214,24 +222,22 @@ feature {NONE} -- Support
 		local
 			l_text: detachable STRING_32
 		do
-			across
-				a_box.new_cursor as ic
-			loop
-				a_page.set_current_x (ic.item.screen_x)
-				a_page.set_current_y (ic.item.screen_y)
-				if attached {EV_TEXT_COMPONENT} ic.item as al_component then
+			⟳ widget: a_box.new_cursor ¦
+				a_page.set_current_x (widget.screen_x)
+				a_page.set_current_y (widget.screen_y)
+				if attached {EV_TEXT_COMPONENT} widget as al_component then
 					l_text := al_component.text
-				elseif attached {EV_LABEL} ic.item as al_label then
+				elseif attached {EV_LABEL} widget as al_label then
 					l_text := al_label.text
 					a_page.set_current_y (al_label.screen_y + al_label.font.height_in_points)
 				end
 				if attached l_text as al_text then
 					a_page.apply_text (al_text)
 				end
-				if attached {EV_BOX} ic.item as al_box then
+				if attached {EV_BOX} widget as al_box then
 					traverse (al_box, a_page)
 				end
-			end
+			⟲
 		end
 
 feature -- Test routines

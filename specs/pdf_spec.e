@@ -11,6 +11,8 @@ feature -- Access
 
 	type: STRING
 			-- The `type' of this Specification.
+		note
+			warning: "DO NOT create a `setter' for this. Implement it as an inline manifest in descendants."
 		deferred
 		end
 

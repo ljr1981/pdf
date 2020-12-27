@@ -122,7 +122,7 @@ feature -- Constants
 			-- A normal Sans font face specification.
 		once
 --			Result := [Font_face_sans, Font_slant_normal, Font_weight_normal]
-			Result := ["Courier", Font_slant_normal, Font_weight_normal]
+			Result := ["Dyuthi", Font_slant_normal, Font_weight_normal]
 		end
 
 	Default_font_size: REAL = 12.0
