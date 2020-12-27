@@ -6,6 +6,9 @@ class
 
 inherit
 	JSE_AWARE				-- How to be a JSON_TRANSFORMABLE thing
+		redefine
+			make_from_json_value
+		end
 
 	PDF_CAIRO_FUNCTIONS		-- How to interop with Cairo
 
@@ -21,6 +24,15 @@ create
 
 feature {NONE} -- Initialization
 
+	make_from_json_value (a_object: JSON_VALUE)
+			--<Precursor
+		do
+			Precursor (a_object)
+		ensure then
+			not_has_surface: not has_surface
+			not_has_cr: not has_cr
+		end
+
 	make_from_json (a_json: STRING)
 			--<Precursor>
 		require else
@@ -30,6 +42,9 @@ feature {NONE} -- Initialization
 			-- presently, al_object = {PDF_REPORT_SPEC} as {JSON_OBJECT}
 				create report_spec.make_from_json_value (al_object)
 			end
+		ensure then
+			not_has_surface: not has_surface
+			not_has_cr: not has_cr
 		end
 
 	make (a_pdf_file_name: STRING; a_height, a_width: INTEGER)
