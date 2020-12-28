@@ -7,8 +7,35 @@ class
 inherit
 	DISPOSABLE
 
+	JSE_AWARE
+
 create
 	make
+
+feature {NONE} -- Initialization (JSON)
+
+	make_from_json (a_json: STRING)
+			--<Precursor>
+		require else
+			True
+		do
+			check attached json_string_to_json_object (a_json) as al_object then
+				-- conversions of items in al_object --> Eiffel feature objects
+				-- see {JSON_CODE_GENERATOR} for more (use TEST_SET to generate)
+			end
+		end
+
+	metadata_refreshed (a_current: ANY): ARRAY [JSON_METADATA]
+			--<Precursor>
+		do
+			Result := <<>> -- populate with "create {JSON_METADATA}.make_text_default"
+		end
+
+	convertible_features (a_current: ANY): ARRAY [STRING]
+			--<Precursor>
+		do
+			Result := <<>> -- populate with "my_feature_name"
+		end
 
 feature {PDF_FACTORY} -- Initialize
 
@@ -93,40 +120,142 @@ feature -- Access
 	indent_size: INTEGER
 			-- The size of an indent in points.
 
-feature -- Constants
+feature -- Layout
 
-	default_indent: INTEGER = 50
-
-	Black: TUPLE [r, g, b: INTEGER]
-			-- The color `Black' in RGB.
-		once
-			Result := [0,0,0]
+	cell: EV_VERTICAL_BOX
+			-- Every page has one `cell'.
+		attribute
+			create Result
+			Result.set_data ("{%"name%":%"cell%"}") -- e.g. {"name":"cbox"}
 		end
 
-	Font_face_sans: STRING = "Sans"
-			-- The Sans font face.
-
-	Font_slant_normal: INTEGER
-			-- The normal font slant (i.e. not italic)
-		once
-			Result := {CAIRO_FONT_SLANT_ENUM_API}.cairo_font_slant_normal
+	cbox: EV_VERTICAL_BOX
+			-- Content (i.e. `cbox') box.
+		attribute
+			create Result
+			Result.set_data ("{%"name%":%"cbox%"}") -- e.g. {"name":"cbox"}
 		end
 
-	Font_weight_normal: INTEGER
-			-- The normal font weight (i.e. not bold)
-		once
-			Result := {CAIRO_FONT_WEIGHT_ENUM_API}.cairo_font_weight_normal
+feature -- Layout Operations
+
+	prep_cell
+			-- Prepare `cbox' in `cell' for Content.
+		note
+			design: "[
+				The "local" variables used here may (one day) want to become
+				client-accessible features on this class. On that day, be sure
+				to create them like `cell' and `cbox' with an invariant as well.
+				Also, then here, the only step will be to do the proper extends
+				and disabling of item expansion.
+				]"
+		local
+			l_mbox: EV_VERTICAL_BOX -- Main-box (entire page)
+			l_midbox: EV_HORIZONTAL_BOX -- Holder of left and right margins with `cbox' sandwiched between them.
+			l_top, l_bottom: EV_HORIZONTAL_BOX -- Margins
+			l_left, l_right: EV_VERTICAL_BOX -- Margins
+		do
+		-- create main-box in cell
+			l_mbox := new_vbox (Void, "mbox", 0)
+		-- add header (top)
+			l_top := new_hbox ("mbox", "top", margin_top)
+		-- add mid-box (left, cbox, right)
+			l_midbox := new_hbox ("mbox", "midbox", 0)
+			l_left := new_vbox ("midbox", "left", margin_left)
+			l_midbox.extend (cbox)
+			l_right := new_vbox ("midbox", "right", margin_right)
+		-- add footer (bottom)
+			l_bottom := new_hbox ("mbox", "bottom", margin_bottom)
 		end
 
-	Font_normal: TUPLE [name: STRING; slant, weight: INTEGER]
-			-- A normal Sans font face specification.
-		once
---			Result := [Font_face_sans, Font_slant_normal, Font_weight_normal]
-			Result := ["Dyuthi", Font_slant_normal, Font_weight_normal]
+	new_vbox (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER): EV_VERTICAL_BOX
+		do
+			check is_vertical: attached {EV_VERTICAL_BOX} new_box (a_parent, a_name, a_min_size, False) as al_result then Result := al_result end
 		end
 
-	Default_font_size: REAL = 12.0
-			-- The normal or default font point size.
+	new_hbox (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER): EV_HORIZONTAL_BOX
+		do
+			check is_vertical: attached {EV_HORIZONTAL_BOX} new_box (a_parent, a_name, a_min_size, True) as al_result then Result := al_result end
+		end
+
+	new_box (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER; a_is_horizontal: BOOLEAN): EV_BOX
+			-- `new_box' of `a_name' to `a_parent' (if named, otherwise `cbox') with `a_min_size'.
+		note
+			design: "[
+				Setting `a_min_size' > 0 indicates that the caller wants to `disable_item_expand' and
+				collapse the `new_box' inside the `a_parent' box to `a_min_size'. Otherwise,
+				let the Result
+				]"
+			EIS: "name=json_prettifier", "src=https://jsonparser.org/"
+		local
+			l_parent_box: EV_BOX
+		do
+		-- get a ref to the parent (or `cbox')
+			if attached a_parent as al_parent then
+				check attached cbox_child (Void, al_parent) as al_parent_box then
+					l_parent_box := al_parent_box
+				end
+			else
+				l_parent_box := cell
+			end
+		-- create new box using `a_is_horizontal' or not
+			if a_is_horizontal then
+				create {EV_HORIZONTAL_BOX} Result
+			else
+				create {EV_VERTICAL_BOX} Result
+			end
+			Result.set_data ("{%"name%":%"" + a_name + "%"}") -- e.g. {"name":"my_box"}
+		-- put Result in `a_parent'
+			l_parent_box.extend (Result)
+		-- handle `a_min_size' and `disable_item_expand'
+			if a_min_size > 0 then
+				if attached {EV_VERTICAL_BOX} l_parent_box as al_vert then
+					Result.set_minimum_height (a_min_size)
+				elseif attached {EV_HORIZONTAL_BOX} l_parent_box as al_horz then
+					Result.set_minimum_width (a_min_size)
+				end
+				l_parent_box.disable_item_expand (Result)
+			end
+		end
+
+	cbox_child (a_box: detachable EV_BOX; a_name: STRING): detachable EV_BOX
+			-- Look for `a_box' named `a_name' starting in `cbox'.
+		local
+			l_target_box: EV_BOX
+		do
+			l_target_box := if attached a_box then a_box else cell end
+			if box_name (l_target_box).same_string (a_name) then
+				Result := l_target_box
+			else
+				across
+					l_target_box.new_cursor as ic
+				loop
+					if attached {EV_BOX} ic.item as al_box and then attached {STRING} al_box.data as al_json then
+						check has_json_object: attached json_string_to_json_object (al_json) as al_json_object then
+							check has_name_attribute: attached json_object_to_string_attached ("name", al_json_object) as al_name then
+								if al_name.same_string (a_name) then
+									Result := al_box
+								else
+									Result := cbox_child (al_box, a_name)
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+
+feature -- Layout Helpers
+
+	box_name (a_box: EV_BOX): STRING
+			-- What is the `box_name' from `a_box' data as json?
+		do
+			check valid_json: attached {STRING} a_box.data as al_json and then
+					attached json_string_to_json_object (al_json) as al_json_object and then
+					attached json_object_to_string_attached ("name", al_json_object) as al_name
+			then
+				Result := al_name
+			end
+		end
 
 feature -- Settings
 
@@ -236,8 +365,6 @@ feature -- Settings
 			set: margin_right = n
 		end
 
-feature -- Status Report
-
 feature -- Basic Operations
 
 	move
@@ -310,5 +437,43 @@ feature {NONE} -- Implementation
 
 	cr: CAIRO_STRUCT_API
 			-- Creation reference.
+
+feature {NONE} -- Implementation: Constants
+
+	default_indent: INTEGER = 50
+
+	Black: TUPLE [r, g, b: INTEGER]
+			-- The color `Black' in RGB.
+		once
+			Result := [0,0,0]
+		end
+
+	Font_face_sans: STRING = "Sans"
+			-- The Sans font face.
+
+	Font_slant_normal: INTEGER
+			-- The normal font slant (i.e. not italic)
+		once
+			Result := {CAIRO_FONT_SLANT_ENUM_API}.cairo_font_slant_normal
+		end
+
+	Font_weight_normal: INTEGER
+			-- The normal font weight (i.e. not bold)
+		once
+			Result := {CAIRO_FONT_WEIGHT_ENUM_API}.cairo_font_weight_normal
+		end
+
+	Font_normal: TUPLE [name: STRING; slant, weight: INTEGER]
+			-- A normal Sans font face specification.
+		once
+			Result := [Font_face_sans, Font_slant_normal, Font_weight_normal]
+		end
+
+	Default_font_size: REAL = 12.0
+			-- The normal or default font point size.
+
+invariant
+	cell_is_cell: attached {STRING} cell.data as al_cell and then al_cell.same_string ("{%"name%":%"cell%"}")
+	cbox_is_cbox: attached {STRING} cbox.data as al_cbox and then al_cbox.same_string ("{%"name%":%"cbox%"}")
 
 end

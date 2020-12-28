@@ -27,8 +27,6 @@ feature -- Test routines
 			assert_strings_not_equal ("page_specs", page_json_with_cell_items, page_spec_json)
 
 			l_page := page_spec_1.twin
-			l_page.cell.extend (create {EV_VERTICAL_BOX})
-			l_page.cell.extend (create {EV_TEXT_FIELD}.make_with_text ("TEST_TEXT_FOR_TEXT_WIDGET"))
 
 			create l_report.make_from_json (report_spec_json_prettified)
 			assert_strings_equal ("report_json", report_spec_json, l_report.json_out)
