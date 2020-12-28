@@ -22,7 +22,6 @@ feature {NONE} -- Initialization
 			--<Precursor>
 		do
 			Precursor
-			create cell
 		end
 
 	make_from_json_value (v: JSON_VALUE)
@@ -30,7 +29,6 @@ feature {NONE} -- Initialization
 		do
 			default_create
 			Precursor (v)
-			create cell
 		end
 
 	make_from_json (a_json: STRING)
@@ -128,14 +126,18 @@ feature -- Access
 
 feature -- Layout
 
-	cell: EV_CELL
+	cell: EV_VERTICAL_BOX
 			-- Every page has one `cell'.
+		attribute
+			create Result
+			Result.set_data ("{%"name%":%"cell%"}") -- e.g. {"name":"cbox"}
+		end
 
 	cbox: EV_VERTICAL_BOX
 			-- Content (i.e. `cbox') box.
 		attribute
 			create Result
-			Result.set_data ("cbox")
+			Result.set_data ("{%"name%":%"cbox%"}") -- e.g. {"name":"cbox"}
 		end
 
 	prep_cell
@@ -143,19 +145,30 @@ feature -- Layout
 		local
 			l_mbox: EV_VERTICAL_BOX -- Main-box (entire page)
 			l_midbox: EV_HORIZONTAL_BOX -- Holder of left and right margins with `cbox' sandwiched between them.
-			l_top, l_left, l_right, l_bottom: EV_CELL -- Margins
+			l_top, l_bottom: EV_HORIZONTAL_BOX -- Margins
+			l_left, l_right: EV_VERTICAL_BOX -- Margins
 		do
 		-- create main-box in cell
-			create l_mbox; cell.extend (l_mbox)
+			l_mbox := new_vbox (Void, "mbox", 0)
 		-- add header (top)
-			create l_top; l_mbox.extend (l_top); l_mbox.disable_item_expand (l_top); l_top.set_minimum_height (margin_top)
+			l_top := new_hbox ("mbox", "top", margin_top)
 		-- add mid-box (left, cbox, right)
-			create l_midbox; l_mbox.extend (l_midbox)
-			create l_left; l_midbox.extend (l_left); l_midbox.disable_item_expand (l_left); l_left.set_minimum_width (margin_left)
+			l_midbox := new_hbox ("mbox", "midbox", 0)
+			l_left := new_vbox ("midbox", "left", margin_left)
 			l_midbox.extend (cbox)
-			create l_right; l_midbox.extend (l_right); l_midbox.disable_item_expand (l_right); l_right.set_minimum_width (margin_right)
+			l_right := new_vbox ("midbox", "right", margin_right)
 		-- add footer (bottom)
-			create l_bottom; l_mbox.extend (l_bottom); l_mbox.disable_item_expand (l_bottom); l_bottom.set_minimum_height (margin_bottom) -- add header (top)		
+			l_bottom := new_hbox ("mbox", "bottom", margin_bottom)
+		end
+
+	new_vbox (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER): EV_VERTICAL_BOX
+		do
+			check is_vertical: attached {EV_VERTICAL_BOX} new_box (a_parent, a_name, a_min_size, False) as al_result then Result := al_result end
+		end
+
+	new_hbox (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER): EV_HORIZONTAL_BOX
+		do
+			check is_vertical: attached {EV_HORIZONTAL_BOX} new_box (a_parent, a_name, a_min_size, True) as al_result then Result := al_result end
 		end
 
 	new_box (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER; a_is_horizontal: BOOLEAN): EV_BOX
@@ -166,6 +179,7 @@ feature -- Layout
 				collapse the `new_box' inside the `a_parent' box to `a_min_size'. Otherwise,
 				let the Result
 				]"
+			EIS: "name=json_prettifier", "src=https://jsonparser.org/"
 		local
 			l_parent_box: EV_BOX
 		do
@@ -175,9 +189,7 @@ feature -- Layout
 					l_parent_box := al_parent_box
 				end
 			else
-				check attached cbox_child (Void, "cbox") as al_parent_box then
-					l_parent_box := al_parent_box
-				end
+				l_parent_box := cell
 			end
 		-- create new box using `a_is_horizontal' or not
 			if a_is_horizontal then
@@ -185,6 +197,9 @@ feature -- Layout
 			else
 				create {EV_VERTICAL_BOX} Result
 			end
+			Result.set_data ("{%"name%":%"" + a_name + "%"}") -- e.g. {"name":"my_box"}
+		-- put Result in `a_parent'
+			l_parent_box.extend (Result)
 		-- handle `a_min_size' and `disable_item_expand'
 			if a_min_size > 0 then
 				if attached {EV_VERTICAL_BOX} l_parent_box as al_vert then
@@ -194,8 +209,6 @@ feature -- Layout
 				end
 				l_parent_box.disable_item_expand (Result)
 			end
-		-- put Result in `a_parent'
-			l_parent_box.extend (Result)
 		end
 
 	cbox_child (a_box: detachable EV_BOX; a_name: STRING): detachable EV_BOX
@@ -203,17 +216,36 @@ feature -- Layout
 		local
 			l_target_box: EV_BOX
 		do
-			l_target_box := if attached a_box then a_box else cbox end
-			across
-				l_target_box.new_cursor as ic
-			loop
-				if attached {EV_BOX} ic.item as al_box and then attached {STRING} al_box.data as al_name then
-					if al_name.same_string (a_name) then
-						Result := al_box
-					else
-						Result := cbox_child (al_box, a_name)
+			l_target_box := if attached a_box then a_box else cell end
+			if box_name (l_target_box).same_string (a_name) then
+				Result := l_target_box
+			else
+				across
+					l_target_box.new_cursor as ic
+				loop
+					if attached {EV_BOX} ic.item as al_box and then attached {STRING} al_box.data as al_json then
+						check has_json_object: attached json_string_to_json_object (al_json) as al_json_object then
+							check has_name_attribute: attached json_object_to_string_attached ("name", al_json_object) as al_name then
+								if al_name.same_string (a_name) then
+									Result := al_box
+								else
+									Result := cbox_child (al_box, a_name)
+								end
+							end
+						end
 					end
 				end
+			end
+		end
+
+	box_name (a_box: EV_BOX): STRING
+			-- What is the `box_name' from `a_box' data as json?
+		do
+			check valid_json: attached {STRING} a_box.data as al_json and then
+					attached json_string_to_json_object (al_json) as al_json_object and then
+					attached json_object_to_string_attached ("name", al_json_object) as al_name
+			then
+				Result := al_name
 			end
 		end
 
@@ -305,5 +337,9 @@ feature -- Settings
 		ensure
 			set: margin_right = n
 		end
+
+invariant
+	cell_is_cell: attached {STRING} cell.data as al_cell and then al_cell.same_string ("{%"name%":%"cell%"}")
+	cbox_is_cbox: attached {STRING} cbox.data as al_cbox and then al_cbox.same_string ("{%"name%":%"cbox%"}")
 
 end

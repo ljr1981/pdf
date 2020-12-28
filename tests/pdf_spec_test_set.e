@@ -111,6 +111,22 @@ feature -- Test routines
 			assert_strings_equal ("make_from_json", page_spec_json, l_spec.json_out)
 		end
 
+	pdf_page_spec_box_test
+			-- Test {PDF_PAGE_SPEC}
+		note
+			testing: "covers/{PDF_PAGE_SPEC}.make_from_json",
+						"covers/{PDF_PAGE_SPEC}.json_out",
+						"covers/{PDF_PAGE_SPEC}.prep_cell",
+						"execution/isolated",
+						"execution/serial"
+		local
+			l_spec: PDF_PAGE_SPEC
+		do
+				-- Ensure that the specification produces the right JSON string
+			l_spec := page_spec_1.twin
+			l_spec.prep_cell
+		end
+
 	pdf_EV_test
 			-- Low-level test using Eiffel Vision2 as basis for page layout.
 		note
