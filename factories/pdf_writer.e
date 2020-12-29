@@ -36,17 +36,26 @@ feature {NONE} -- Initialization
 	make_from_json (a_json: STRING)
 			--<Precursor>
 			-- The `a_json' is a `report_spec'.
+		note
+			warning: "[
+				In order to make a `surface' with a `cr', we have to make an assumption.
+				We assume that there is at least one page-spec in the report-spec. Moreover,
+				we assume that the first page-spec (or only, if just one) is the "starting"
+				page. Now, this is okay (for the moment) because we can adjust the
+				settings on the `surface' before we start using the `cr' to make pages
+				from the page-specs. We can even change to another page-spec and then
+				redefine the `surface' and `cr' accordingly.
+				
+				We make these assumptions because we want this creation feature to
+				have the same ensure as the standard `make'.
+				]"
 		require else
 			True
 		do
 			create report_spec.make_from_json (a_json)
 			check has_page_spec: attached report_spec_attached.page_specs [1] as al_top_page then
-				surface := new_surface (al_top_page.name, al_top_page.width, al_top_page.height)
-				last_cr := cr
+				make (report_spec_attached.output_file_name, al_top_page.width, al_top_page.height)
 			end
-		ensure then
-			has_surface: has_surface
-			has_cr: has_cr
 		end
 
 	make (a_pdf_file_name: STRING; a_height, a_width: INTEGER)
@@ -97,8 +106,8 @@ feature -- Data Loading
 				Name_space ::= 'namespace' ':' '[' [Box_spec_name ','] Widget_spec_name ']'
 				]"
 		require
-			not_has_surface: not has_surface 	-- call `load_data' before creating `surface' and `cr' instances.
-			not_has_cr: not has_cr				-- same
+--			not_has_surface: not has_surface 	-- call `load_data' before creating `surface' and `cr' instances.
+--			not_has_cr: not has_cr				-- same
 		do
 			check valid_json: attached json_string_to_json_object (a_json) as al_data then
 				last_data_json := a_json
@@ -215,7 +224,11 @@ feature -- Factory Products
 			has_surface: has_surface
 			has_cr: has_cr
 		do
-			page_make_with_cr
+			if attached report_spec_attached.page_specs [1] as al_page_spec then
+				page_make_with_cr (al_page_spec)
+			else
+				page_make_with_cr (Void)
+			end
 			is_first_page_created := True
 		ensure
 			is_first_page_created = True
@@ -223,7 +236,7 @@ feature -- Factory Products
 			has_cr: has_cr
 		end
 
-	next_cr_page
+	next_cr_page (a_page_spec: detachable PDF_PAGE_SPEC)
 			-- Make `next_cr_page' for current PDF.
 		require
 			is_first_page_created
@@ -231,7 +244,7 @@ feature -- Factory Products
 			has_cr: has_cr
 		do
 			{CAIRO_FUNCTIONS}.cairo_show_page(cr)
-			page_make_with_cr
+			page_make_with_cr (a_page_spec)
 		ensure
 			is_first_page_created
 			has_surface: has_surface
@@ -305,13 +318,24 @@ feature -- Settings
 
 feature {NONE} -- Implementation: Pagination
 
-	page_make_with_cr
+	page_make_with_cr (a_page_spec: detachable PDF_PAGE_SPEC)
 			-- Make a new `current_cr_page' item.
 		require
 			has_surface: has_surface
 			has_cr: has_cr
 		do
-			create current_cr_page.make (cr, [page_height, page_width])
+			if attached a_page_spec as al_page_spec_arg then
+				-- We were passed a page_spec
+				create current_cr_page.make_from_page_spec (cr, al_page_spec_arg)
+			elseif not report_spec_attached.page_specs.is_empty then
+				-- We can assume a page_spec
+				if attached report_spec_attached.page_specs [1] as al_first_page_spec then
+					create current_cr_page.make_from_page_spec (cr, al_first_page_spec)
+				end
+			else
+				-- We have no page_spec, so we create whatever our default is
+				create current_cr_page.make (cr, [page_height, page_width])
+			end
 		ensure
 			same_page: attached current_cr_page
 		end

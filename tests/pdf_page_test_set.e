@@ -13,7 +13,7 @@ inherit
 feature -- Test routines
 
 	page_prep_cell_tests
-			-- Test the `prep_cell' feature on {PDF_PAGE}.
+			-- Test the `cell_prep' feature on {PDF_PAGE}.
 		note
 			testing:  "covers/{PDF_PAGE}.prep_cell",
 						"covers/{PDF_PAGE}.cell",
@@ -34,10 +34,10 @@ feature -- Test routines
 		do
 		-- prep for page
 			create l_writer.make ("page_prep_cell_test.pdf", us_8_by_11_page_height, us_8_by_11_page_width)
+			create l_writer.make_from_json (report_spec_3.json_out)
 			l_writer.first_cr_page
 		-- grab first page
 			l_page := l_writer.current_cr_page_attached
-			l_page.prep_cell
 		-- start testing page
 			l_parent_box := l_page.cell
 			l_child_box := l_page.box_ref_attached (l_parent_box, "mbox")
@@ -68,7 +68,10 @@ feature -- Test routines
 			l_writer.first_cr_page
 		-- grab first page
 			l_page := l_writer.current_cr_page_attached
-			l_page.prep_cell
+			assert_integers_equal ("has_3_boxes", 3, l_page.boxes.count)
+			assert_integers_equal ("has_3_widgets", 3, l_page.widgets.count)
+		-- does the prep_cell result in boxes from page-spec?
+
 		end
 
 end

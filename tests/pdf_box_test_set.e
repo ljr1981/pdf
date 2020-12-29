@@ -26,17 +26,19 @@ feature -- Test routines
 			l_page_spec: PDF_PAGE_SPEC
 		do
 				-- These "page_specs" are not the same because they do not have the same purpose.
-			assert_strings_not_equal ("page_specs", page_json_with_cell_items, page_spec_json)
+			assert_strings_not_equal ("page_specs", page_json_with_cell_items, page_spec_json_1)
 
 			l_page_spec := page_spec_1.twin
 
 			create l_report_spec.make_from_json (report_spec_json_prettified)
-			assert_strings_equal ("report_json", report_spec_json, l_report_spec.json_out)
+			assert_strings_equal ("report_spec_json_1", report_spec_json_1, l_report_spec.json_out)
 
 			create l_report_spec
 			l_report_spec.set_page_specs (create {ARRAYED_LIST [PDF_PAGE_SPEC]}.make_from_array (<<l_page_spec>>))
 			l_report_spec.set_name ("MY_REPORT_1")
-			assert_strings_equal ("report_json", report_spec_json, l_report_spec.json_out)
+			l_report_spec.set_output_file_name ("my.pdf")
+				-- No page specs, so empty boxes/widgets.
+			assert_strings_equal ("report_spec_json_2", report_spec_json_2, l_report_spec.json_out)
 		end
 
 end

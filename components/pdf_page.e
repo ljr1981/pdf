@@ -38,7 +38,7 @@ feature {NONE} -- Initialization (JSON)
 			Result := <<>> -- populate with "my_feature_name"
 		end
 
-feature {PDF_FACTORY} -- Initialize
+feature {NONE} -- Initialize
 
 	make_from_page_spec (a_cr: CAIRO_STRUCT_API; a_spec: PDF_PAGE_SPEC)
 			-- Create with `a_spec'.
@@ -53,6 +53,9 @@ feature {PDF_FACTORY} -- Initialize
 			set_margin_bottom (a_spec.margin_bottom)
 			set_margin_left (a_spec.margin_left)
 			set_margin_right (a_spec.margin_right)
+			boxes := a_spec.boxes.twin
+			widgets := a_spec.widgets.twin
+			cell_prep
 		end
 
 	make (a_cr: CAIRO_STRUCT_API; a_sizing: TUPLE [h, w: INTEGER])
@@ -137,9 +140,21 @@ feature -- Layout
 			Result.set_data ("{%"name%":%"cbox%"}") -- e.g. {"name":"cbox"}
 		end
 
+	boxes: JSON_ARRAY
+			-- Specifications for `boxes' (see `cell_prep').
+		attribute
+			create Result.make_empty
+		end
+
+	widgets: JSON_ARRAY
+			-- Specifications for `widgets' (see `cell_prep').
+		attribute
+			create Result.make_empty
+		end
+
 feature -- Layout Operations
 
-	prep_cell
+	cell_prep
 			-- Prepare `cbox' in `cell' for Content.
 		note
 			design: "[
@@ -154,6 +169,11 @@ feature -- Layout Operations
 			l_midbox: EV_HORIZONTAL_BOX -- Holder of left and right margins with `cbox' sandwiched between them.
 			l_top, l_bottom: EV_HORIZONTAL_BOX -- Margins
 			l_left, l_right: EV_VERTICAL_BOX -- Margins
+		-- box-specs
+			l_parent: detachable STRING
+			l_prefix,
+			l_name: STRING
+			l_min_size: INTEGER
 		do
 		-- create main-box in cell
 			l_mbox := new_vbox (Void, "mbox", 0)
@@ -166,6 +186,11 @@ feature -- Layout Operations
 			l_right := new_vbox ("midbox", "right", margin_right)
 		-- add footer (bottom)
 			l_bottom := new_hbox ("mbox", "bottom", margin_bottom)
+		-- deal with `boxes'
+			⟳ ic:boxes ¦
+				-- we need: parent (if any), name, and min_size
+				do_nothing
+			⟲
 		end
 
 	new_vbox (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER): EV_VERTICAL_BOX

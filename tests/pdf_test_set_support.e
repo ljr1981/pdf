@@ -40,7 +40,7 @@ end
 
 ]"
 
-	frozen page_spec_json: STRING
+	frozen page_spec_json_1: STRING
 			-- Potential {PDF_PAGE_SPEC} json.
 		note
 			not_prettified: "because it is used to test against `emittted' json."
@@ -48,6 +48,17 @@ end
 		once
 			Result := "[
 {"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
+]"
+		end
+
+	frozen page_spec_json_2: STRING
+			-- Potential {PDF_PAGE_SPEC} json.
+		note
+			not_prettified: "because it is used to test against `emittted' json."
+			EIS: "name=json_parser", "src=https://jsonparser.org/"
+		once
+			Result := "[
+{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":[],"widgets":[],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
 ]"
 		end
 
@@ -230,22 +241,36 @@ end
 		once
 			create Result
 			Result.set_name ("report_spec_1")
+			Result.set_output_file_name ("my.pdf")
 			Result.page_specs.force (page_spec_1)
 		end
 
-	frozen report_spec_1_json: STRING
+	frozen report_spec_1_json_1: STRING
 			-- Potential {PDF_REPORT_SPEC} json string.
+			-- boxes and widgets are null
 		note
 			not_prettified: "because it is used to test against `emittted' json."
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
 		once
 			Result := "[
-{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}],"output_file_name":"my.pdf"}
+]"
+		end
+
+	frozen report_spec_1_json_2: STRING
+			-- Potential {PDF_REPORT_SPEC} json string.
+			-- boxes and widgets are empty JSON_ARRAYs
+		note
+			not_prettified: "because it is used to test against `emittted' json."
+			EIS: "name=json_parser", "src=https://jsonparser.org/"
+		once
+			Result := "[
+{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":[],"widgets":[],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}],"output_file_name":"my.pdf"}
 ]"
 		end
 
 	frozen report_spec_1_data_json: STRING
-			-- Possible "data" for `report_spec_1_json' (i.e. same as `report_spec_1').
+			-- Possible "data" for `report_spec_1_json_1' (i.e. same as `report_spec_1').
 		note
 			prettified: "because it is used to test loading."
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
@@ -299,6 +324,7 @@ end
 	report_spec_1_make_from_json_code_string: STRING = "[
 check attached json_string_to_json_object (a_json) as al_object then
 	set_name (json_object_to_string_attached ("name", al_object))
+	set_output_file_name (json_object_to_string_attached ("output_file_name", al_object))
 	fill_arrayed_list_of_detachable_any ("page_specs", al_object, page_specs, agent (a_object: JSON_VALUE): PDF_PAGE_SPEC do create Result.make_from_json_value (a_object) end)
 end
 
@@ -311,7 +337,7 @@ end
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
 		once
 			Result := "[
-{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11},{"name":"page_spec_2","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":612,"width":792,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11},{"name":"page_spec_2","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":612,"width":792,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}],"output_file_name":"my.pdf"}
 ]"
 		end
 
@@ -335,6 +361,7 @@ end
 		once
 			create Result
 			Result.set_name ("report_spec_1")
+			Result.set_output_file_name ("my.pdf")
 			Result.page_specs.force (page_spec_1)
 			Result.page_specs.force (page_spec_2)
 		end
@@ -344,6 +371,7 @@ end
 		once
 			create Result
 			Result.set_name ("report_spec_3")
+			Result.set_output_file_name ("my.pdf")
 			Result.page_specs.force (page_spec_3)
 		end
 
@@ -466,13 +494,18 @@ feature {NONE} -- PDF_BOX Test Support
 ]"
 	end
 
-	report_spec_json: STRING = "[
-{"name":"MY_REPORT_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+	report_spec_json_1: STRING = "[
+{"name":"MY_REPORT_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":[],"widgets":[],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}],"output_file_name":"my.pdf"}
+]"
+
+	report_spec_json_2: STRING = "[
+{"name":"MY_REPORT_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}],"output_file_name":"my.pdf"}
 ]"
 
 	report_spec_json_prettified: STRING = "[
 {
   "name": "MY_REPORT_1",
+  "output_file_name":"my.pdf",
   "page_specs": [
     {
       "name": "page_spec_1",

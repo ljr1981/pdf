@@ -61,14 +61,14 @@ feature -- Test routines
 		do
 				-- Ensure that the specification produces the right JSON string
 			l_spec := report_spec_1.twin
-			assert_strings_equal ("report_spec_1_json", report_spec_1_json, l_spec.json_out)
+			assert_strings_equal ("report_spec_1_json_1", report_spec_1_json_1, l_spec.json_out)
 
 				-- Ensure that the code-generator produces what we think make-from-json will need.
 			assert_strings_equal ("report_spec_1_make_from_json_code_string", report_spec_1_make_from_json_code_string, l_spec.generated_make_from_json_code (l_spec))
 
 				-- Now, create a page from a specification and ensure the JSON output is correct.
-			create l_spec.make_from_json (report_spec_1_json)
-			assert_strings_equal ("report_spec_1_json", report_spec_1_json, l_spec.json_out)
+			create l_spec.make_from_json (report_spec_1_json_1)
+			assert_strings_equal ("report_spec_1_json_2", report_spec_1_json_2, l_spec.json_out)
 		end
 
 	page_spec_test
@@ -83,14 +83,14 @@ feature -- Test routines
 		do
 				-- Ensure that the specification produces the right JSON string
 			l_spec := page_spec_1.twin
-			assert_strings_equal ("page_spec_json", page_spec_json, l_spec.json_out)
+			assert_strings_equal ("page_spec_json", page_spec_json_1, l_spec.json_out)
 
 				-- Ensure that the code-generator produces what we think make-from-json will need.
 			assert_strings_equal ("make_from_json_code", page_spec_1_make_from_json_code_string, l_spec.generated_make_from_json_code (l_spec))
 
 				-- Now, create a page from a specification and ensure the JSON output is correct.
-			create l_spec.make_from_json (page_spec_json)
-			assert_strings_equal ("make_from_json", page_spec_json, l_spec.json_out)
+			create l_spec.make_from_json (page_spec_json_1)
+			assert_strings_equal ("page_spec_json_2", page_spec_json_2, l_spec.json_out)
 		end
 
 	pdf_EV_test

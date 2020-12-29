@@ -26,6 +26,7 @@ feature {NONE} -- Initialization
 		do
 			check attached {JSON_OBJECT} json_string_to_json_object (a_json) as al_object then
 				set_name (json_object_to_string_attached ("name", al_object))
+				set_output_file_name (json_object_to_string_attached ("output_file_name", al_object))
 				fill_arrayed_list_of_detachable_any ("page_specs", al_object, page_specs, agent (a_object: JSON_VALUE): PDF_PAGE_SPEC do create Result.make_from_json_value (a_object) end)
 			end
 		end
@@ -34,6 +35,7 @@ feature {NONE} -- Initialization
 			--<Precursor>
 		do
 			Result := <<
+						create {JSON_METADATA}.make_text_default,
 						create {JSON_METADATA}.make_text_default,
 						create {JSON_METADATA}.make_text_default
 						>>
@@ -44,6 +46,7 @@ feature {NONE} -- Initialization
 		do
 			Result := <<
 						"name",
+						"output_file_name",
 						"page_specs"
 						>>
 		end
@@ -51,6 +54,14 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	type: STRING = "report"
+
+	output_file_name: STRING
+			-- The name of the output file.
+		attribute
+			create Result.make_empty
+		ensure
+			not_empty: not Result.is_empty
+		end
 
 	page_specs: ARRAYED_LIST [PDF_PAGE_SPEC]
 			-- Page specification list.
@@ -71,6 +82,17 @@ feature -- Settings
 					page_specs.force (al_item)
 				end
 			⟲
+		end
+
+	set_output_file_name (s: like output_file_name)
+			-- Set `output_file_name' from `s'.
+		require
+			not_empty: not s.is_empty
+			-- valid-file-name test? {PLAIN_TEXT_FILE}
+		do
+			output_file_name := s
+		ensure
+			set: output_file_name.same_string (s)
 		end
 
 feature -- Basic Operations
