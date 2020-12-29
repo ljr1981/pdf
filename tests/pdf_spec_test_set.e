@@ -43,24 +43,6 @@ feature -- Test routines
 
 				-- Test to ensure each item is what we expect ...
 				-- In this project SCOOP is turned on, so we care about the separate-ness
-			across
-				1 |..| l_array.count as ic
-			loop
-				if attached l_tuple as al_tuple and then attached al_tuple.item (ic.item) as al_tuple_item then
-					separate al_tuple_item as sic do
-						if attached {INTEGER} sic as al_sic then
-							assert_integers_equal ("ic_item_" + ic.item.out, ic.item, al_sic)
-						end
-					end
-				end
-			end
-
-			assert_32 ("tuple_items_equal_array_items", across (1 |..| l_array.count) as ic all
-															attached l_tuple as al_tuple and then
-															attached al_tuple.item (ic.item) as al_item
-															and then al_item = ic.item
-														end)
-
 			assert_32 ("tuple_items_equal_array_items", ∀ ic: (1 |..| l_array.count) ¦
 																	attached l_tuple as al_tuple and then
 																	attached al_tuple.item (ic) as al_item

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Representation of a PDF Page."
 
 class

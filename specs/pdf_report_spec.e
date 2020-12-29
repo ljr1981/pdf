@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Specification for a PDF_REPORT"
 
 class
@@ -65,15 +65,12 @@ feature -- Settings
 	set_page_specs (v: ARRAYED_LIST [detachable ANY])
 			-- Set `page_specs' from `v'.
 		do
-			across
-				v as ic
-			from
-				page_specs.wipe_out
-			loop
-				if attached {PDF_PAGE_SPEC} ic.item as al_item then
+			page_specs.wipe_out
+			⟳ ic:v ¦
+				if attached {PDF_PAGE_SPEC} ic as al_item then
 					page_specs.force (al_item)
 				end
-			end
+			⟲
 		end
 
 feature -- Basic Operations
