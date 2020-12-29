@@ -10,7 +10,8 @@ inherit
 	JSE_AWARE
 
 create
-	make
+	make,
+	make_from_page_spec
 
 feature {NONE} -- Initialization (JSON)
 
@@ -183,7 +184,7 @@ feature -- Layout Operations
 			design: "[
 				Setting `a_min_size' > 0 indicates that the caller wants to `disable_item_expand' and
 				collapse the `new_box' inside the `l_parent_box' to `a_min_size'. Otherwise,
-				let the Result expand to fill the `l_parent_box'. Either way--we get a Result box in a parent. 
+				let the Result expand to fill the `l_parent_box'. Either way--we get a Result box in a parent.
 				]"
 			EIS: "name=json_prettifier", "src=https://jsonparser.org/"
 		require
