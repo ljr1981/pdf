@@ -35,13 +35,18 @@ feature {NONE} -- Initialization
 
 	make_from_json (a_json: STRING)
 			--<Precursor>
+			-- The `a_json' is a `report_spec'.
 		require else
 			True
 		do
 			create report_spec.make_from_json (a_json)
+			check has_page_spec: attached report_spec_attached.page_specs [1] as al_top_page then
+				surface := new_surface (al_top_page.name, al_top_page.width, al_top_page.height)
+				last_cr := cr
+			end
 		ensure then
-			not_has_surface: not has_surface
-			not_has_cr: not has_cr
+			has_surface: has_surface
+			has_cr: has_cr
 		end
 
 	make (a_pdf_file_name: STRING; a_height, a_width: INTEGER)

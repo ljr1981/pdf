@@ -24,7 +24,7 @@ feature {NONE} -- Initialization
 		require else
 			True
 		do
-			check attached json_string_to_json_object (a_json) as al_object then
+			check attached {JSON_OBJECT} json_string_to_json_object (a_json) as al_object then
 				set_name (json_object_to_string_attached ("name", al_object))
 				fill_arrayed_list_of_detachable_any ("page_specs", al_object, page_specs, agent (a_object: JSON_VALUE): PDF_PAGE_SPEC do create Result.make_from_json_value (a_object) end)
 			end

@@ -50,6 +50,27 @@ feature -- Test routines
 			l_writer.destroy
 		end
 
+	page_prep_cell_tests_with_box_specs
+			-- Test creation of a {PDF_PAGE} with `boxes'
+		note
+			testing:  "covers/{PDF_PAGE}.prep_cell",
+						"covers/{PDF_WRITER}.make",
+						"covers/{PDF_WRITER}.first_cr_page",
+						"covers/{PDF_WRITER}.destroy",
+						"execution/isolated",
+						"execution/serial"
+		local
+			l_writer: PDF_WRITER
+			l_page: PDF_PAGE
+		do
+		-- prep for page
+			create l_writer.make_from_json (report_spec_3.json_out)
+			l_writer.first_cr_page
+		-- grab first page
+			l_page := l_writer.current_cr_page_attached
+			l_page.prep_cell
+		end
+
 end
 
 
