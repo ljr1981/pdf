@@ -38,10 +38,7 @@ feature {NONE} -- Initialization
 		require else
 			True
 		do
-			check attached {JSON_OBJECT} json_string_to_json_object (a_json) as al_object then
-			-- presently, al_object = {PDF_REPORT_SPEC} as {JSON_OBJECT}
-				create report_spec.make_from_json_value (al_object)
-			end
+			create report_spec.make_from_json (a_json)
 		ensure then
 			not_has_surface: not has_surface
 			not_has_cr: not has_cr

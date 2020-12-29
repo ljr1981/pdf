@@ -34,6 +34,8 @@ check attached json_string_to_json_object (a_json) as al_object then
 	set_margin_bottom (json_object_to_integer_32 ("margin_bottom", al_object))
 	set_margin_left (json_object_to_integer_32 ("margin_left", al_object))
 	set_margin_right (json_object_to_integer_32 ("margin_right", al_object))
+	set_boxes (no_conversion)
+	set_widgets (no_conversion)
 end
 
 ]"
@@ -45,12 +47,32 @@ end
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
 		once
 			Result := "[
-{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
+{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
 ]"
 		end
 
 	frozen page_spec_1: PDF_PAGE_SPEC
 			-- Example #1 of a page spec.
+		note
+			design: "[
+				See `report_spec_1_data_json' for more.
+				
+				In the above json-based "data" we find refs to "my_box_N" and "my_widget_N", where
+				the data is expecting this page-spec to have defined these boxes and widgets. That
+				is--this page-spec needs to define 3 EV_BOXes and 3 EV_WIDGETs.
+				
+				How, is the question.
+				
+				Ultimately, a {PDF_PAGE} will be built from a {PDF_PAGE_SPEC}. The page will have
+				the actual EV_things, whereas the page-spec as the spec-things (usualy json). So,
+				what does a box-spec and widget-spec look like?
+				
+				Define: Box-spec
+				Define: Widget-spec
+				
+				Note that boxes can be nested and widgets are just widgets, whose relation to a
+				box is specified in the data (yes?).
+				]"
 		once
 			create Result
 			Result.set_name ("page_spec_1")
@@ -63,6 +85,8 @@ end
 			Result.set_margin_left ({PDF_CONST}.default_margin_left)
 			Result.set_margin_right ({PDF_CONST}.default_margin_right)
 			Result.set_margin_top ({PDF_CONST}.default_margin_top)
+		-- Start adding box-specs
+		-- Start adding widget-specs
 		end
 
 	frozen page_spec_2: PDF_PAGE_SPEC
@@ -81,6 +105,126 @@ end
 			Result.set_margin_top ({PDF_CONST}.default_margin_top)
 		end
 
+	frozen page_spec_3_json: STRING
+			-- Potential {PDF_PAGE_SPEC} json, including box and widget specs.
+		note
+			EIS: "name=json_parser", "src=https://jsonparser.org/"
+		once
+			Result := "[
+{
+  "name": "page_spec_3",
+  "font_color": [
+    0,
+    0,
+    0
+  ],
+  "font_face": [
+    "Sans",
+    0,
+    0
+  ],
+  "height": 792,
+  "width": 612,
+  "indent_size": 50,
+  "font_size": 10,
+  "margin_top": 16,
+  "margin_bottom": 13,
+  "margin_left": 11,
+  "margin_right": 11,
+  "boxes": [
+    {
+      "b1": [
+        {
+          "name": "my_box_1"
+        },
+        {
+          "parent": null
+        },
+        {
+          "type": "vertical"
+        },
+        {
+          "layout": [
+            {
+              "minimum_size": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "b2": [
+        {
+          "name": "my_box_2"
+        },
+        {
+          "parent": null
+        },
+        {
+          "type": "horizontal"
+        },
+        {
+          "layout": [
+            {
+              "minimum_size": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "b3": [
+        {
+          "name": "my_box_3"
+        },
+        {
+          "parent": null
+        },
+        {
+          "type": "vertical"
+        },
+        {
+          "layout": [
+            {
+              "minimum_size": 0
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "w1": [
+        {
+          "name": "my_widget_1"
+        },
+        {
+          "type": "label"
+        }
+      ]
+    },
+    {
+      "my_widget_2": [
+        "label"
+      ]
+    },
+    {
+      "my_widget_3": [
+        "label"
+      ]
+    }
+  ]
+}
+]"
+		end
+
+	frozen page_spec_3: PDF_PAGE_SPEC
+			-- Example #3 of a page spec.
+		once
+			create Result.make_from_json (page_spec_3_json)
+		end
+
 	frozen report_spec_1: PDF_REPORT_SPEC
 			-- Report spec #1
 		once
@@ -96,7 +240,7 @@ end
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
 		once
 			Result := "[
-{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 		end
 
@@ -110,6 +254,9 @@ end
 {
   "d1": [
     {
+      "page_spec": "page_spec_1"
+    },
+    {
       "box": "my_box_1"
     },
     {
@@ -119,6 +266,9 @@ end
   ],
   "d2": [
     {
+      "page_spec": "page_spec_1"
+    },
+    {
       "box": "my_box_2"
     },
     {
@@ -127,6 +277,9 @@ end
     "TEXT2"
   ],
   "d3": [
+    {
+      "page_spec": "page_spec_1"
+    },
     {
       "box": "my_box_3"
     },
@@ -158,7 +311,7 @@ end
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
 		once
 			Result := "[
-{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11},{"name":"page_spec_2","font_color":[0,0,0],"font_face":["Sans",0,0],"height":612,"width":792,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"report_spec_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11},{"name":"page_spec_2","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":612,"width":792,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 		end
 
@@ -184,6 +337,14 @@ end
 			Result.set_name ("report_spec_1")
 			Result.page_specs.force (page_spec_1)
 			Result.page_specs.force (page_spec_2)
+		end
+
+	frozen report_spec_3: PDF_REPORT_SPEC
+			-- Report spec #3
+		once
+			create Result
+			Result.set_name ("report_spec_3")
+			Result.page_specs.force (page_spec_3)
 		end
 
 	vbox_json: STRING
@@ -306,7 +467,7 @@ feature {NONE} -- PDF_BOX Test Support
 	end
 
 	report_spec_json: STRING = "[
-{"name":"MY_REPORT_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"MY_REPORT_1","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 
 	report_spec_json_prettified: STRING = "[
@@ -332,7 +493,9 @@ feature {NONE} -- PDF_BOX Test Support
       "margin_top": 16,
       "margin_bottom": 13,
       "margin_left": 11,
-      "margin_right": 11
+      "margin_right": 11,
+      "boxes": null,
+      "widgets": null
     }
   ]
 }
