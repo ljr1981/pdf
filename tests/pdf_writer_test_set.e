@@ -15,7 +15,8 @@ feature -- Test routines
 	pdf_writer_tests
 			-- Tests of the {PDF_WRITER}.
 		note
-			testing:  "covers/{PDF_WRITER}",
+			testing:  "covers/{PDF_WRITER}.make_from_json",
+						"covers/{PDF_WRITER}.load_data",
 						"execution/isolated",
 						"execution/serial"
 		local
@@ -46,6 +47,7 @@ feature -- Test routines
 				assert_32 ("has_my_box_2", attached l_writer.current_cr_page_attached.box_ref (Void, "my_box_2"))
 				assert_32 ("has_my_box_3", attached l_writer.current_cr_page_attached.box_ref (Void, "my_box_3"))
 			end
+			assert_integers_equal ("has_1_page_templates", 1, l_writer.page_templates.count)
 
 		-- Load report data from json
 			l_writer.load_data (report_spec_1_data_json)

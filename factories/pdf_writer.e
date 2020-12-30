@@ -53,11 +53,12 @@ feature {NONE} -- Initialization
 			True
 		do
 			create report_spec.make_from_json (a_json)
-			check has_page_spec: attached report_spec_attached.page_specs [1] as al_top_page then
-				surface := new_surface (report_spec_attached.output_file_name, al_top_page.width, al_top_page.height)
-				last_cr := cr
-				page_make_with_cr (al_top_page)
-			end
+			surface := new_surface (report_spec_attached.output_file_name, us_8_by_11_page_width, us_8_by_11_page_height)
+			last_cr := cr
+			⟳ ic_page_spec:report_spec_attached.page_specs ¦
+				page_make_with_cr (ic_page_spec)
+				page_templates.force (current_cr_page_attached.twin)
+			⟲
 		end
 
 	make (a_pdf_file_name: STRING; a_height, a_width: INTEGER)
@@ -107,20 +108,11 @@ feature -- Data Loading
 
 				Name_space ::= 'namespace' ':' '[' [Box_spec_name ','] Widget_spec_name ']'
 				]"
-		require
---			not_has_surface: not has_surface 	-- call `load_data' before creating `surface' and `cr' instances.
---			not_has_cr: not has_cr				-- same
 		do
 			check valid_json: attached json_string_to_json_object (a_json) as al_data then
 				last_data_json := a_json
 				last_data_json_object := al_data
-				-- we now have valid json-data to start plugging into our report page-layouts.
-				⟳ item: al_data ¦
-					-- each `item' ...
-				⟲
 			end
-		ensure
-			-- is data validated against page-spec(s)?
 		end
 
 	last_data_json_object: detachable JSON_OBJECT
@@ -142,6 +134,33 @@ feature -- Data Loading
 		end
 
 feature -- Data Processing (report generation in-memory)
+
+	page_templates: ARRAYED_LIST [PDF_PAGE]
+			-- Empty `page_templates' as a source of empty pages
+			-- for `process_data'.
+		attribute
+			create Result.make (10)
+		end
+
+	pages: ARRAYED_LIST [PDF_PAGE]
+			-- The `pages' generated from `last_data'
+		require
+			has_data: attached last_data_json_object
+		attribute
+			create Result.make (last_data_json_object_attached.count)
+		ensure
+			enough: Result.capacity = last_data_json_object_attached.count
+		end
+
+	process_data
+			-- For each `last_data_json_object' item,
+			-- create a copy of a {PDF_PAGE} template.
+		do
+		-- each data item ...
+		-- determine which page to use from data
+		-- set `surface' attributes from selected page
+		-- add the current data item
+		end
 
 feature -- Report finalization
 
@@ -272,16 +291,6 @@ feature -- Access: JSON-able
 			--	(usually coming from JSON spec)
 
 feature -- Access: Generated
-
-	pages: ARRAYED_LIST [PDF_PAGE]
-			-- The `pages' generated from `last_data'
-		require
-			has_data: attached last_data_json_object
-		attribute
-			create Result.make (last_data_json_object_attached.count)
-		ensure
-			enough: Result.capacity = last_data_json_object_attached.count
-		end
 
 	page_height: INTEGER assign set_page_height
 			-- The `page_height' in points.
