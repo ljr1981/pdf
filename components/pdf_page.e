@@ -198,10 +198,7 @@ feature -- Layout Operations
 						⟳ ic_box_object:al_box_array ¦
 							 if attached {JSON_OBJECT} ic_box_object as al_box_object then
 								if attached al_box_object.string_item ("name") as al_name_item then
-									create l_name.make (al_name_item.item.count + 2 + 10)
-									l_name.append_string_general (l_prefix)
-									l_name.append_character ('_')
-									l_name.append_string (al_name_item.item)
+									l_name := al_name_item.item
 								elseif attached al_box_object.string_item ("parent") as al_parent_item then
 									l_parent := if al_parent_item.item.same_string ("null") then Void
 												else al_parent_item.item end
