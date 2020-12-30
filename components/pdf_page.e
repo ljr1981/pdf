@@ -231,9 +231,6 @@ feature -- Layout Operations
 					end
 				end
 			⟲
-		-- deal with `widgets'
-			do_nothing -- for now ...
-						-- (this will look like boxes, above)
 		end
 
 	new_vbox (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER): EV_VERTICAL_BOX
