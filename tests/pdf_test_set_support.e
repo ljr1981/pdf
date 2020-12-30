@@ -216,13 +216,23 @@ end
       ]
     },
     {
-      "my_widget_2": [
-        "label"
+      "w2": [
+        {
+          "name": "my_widget_2"
+        },
+        {
+          "type": "label"
+        }
       ]
     },
     {
-      "my_widget_3": [
-        "label"
+      "w3": [
+        {
+          "name": "my_widget_3"
+        },
+        {
+          "type": "label"
+        }
       ]
     }
   ]

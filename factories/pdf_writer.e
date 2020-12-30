@@ -147,6 +147,12 @@ feature -- Report finalization
 
 feature -- Cleanup Operations
 
+	output_pdf
+			-- Output PDF by destroy/dispose
+		do
+			dispose
+		end
+
 	dispose
 			--<Precursor>
 			-- Handle the `destroy' of the Factoy.
