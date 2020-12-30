@@ -19,6 +19,7 @@ feature -- Test routines
 						"covers/{PDF_REPORT_SPEC}.set_name",
 						"covers/{PDF_REPORT_SPEC}.json_out",
 						"covers/{PDF_REPORT_SPEC}.make_from_json",
+						"covers/{PDF_REPORT_SPEC}.set_output_file_name",
 						"execution/isolated",
 						"execution/serial"
 		local

@@ -42,4 +42,20 @@ feature -- Access
 	default_margin_top: INTEGER = 16
 		--	margin_top := (.22 * 72).truncated_to_integer = 15.84
 
-end
+	default_pdf_file_name: STRING = "pdffile.pdf"
+
+	regex: RX_PCRE_ROUTINES
+			--
+		once
+			create Result
+		end
+
+	valid_file_name_regex_pattern: STRING = "^[\w,\s-]+\.[A-Za-z]{3}$"
+
+	is_valid_file_name (fn: READABLE_STRING_GENERAL): BOOLEAN
+			-- Is `fn' a valid file name based on `valid_file_name_regex_pattern'.
+		do
+			Result := attached regex.regexp (valid_file_name_regex_pattern) as al_expr and then al_expr.matches (fn)
+		end
+
+;end

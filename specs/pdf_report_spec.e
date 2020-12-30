@@ -22,7 +22,8 @@ feature {NONE} -- Initialization
 	make_from_json (a_json: STRING)
 			--<Precursor>
 		require else
-			True
+			not_empty: not a_json.is_empty
+			valid_json: attached (create {JSON_PARSER}.make_with_string (a_json)) as al_parser and then al_parser.is_valid
 		do
 			check attached {JSON_OBJECT} json_string_to_json_object (a_json) as al_object then
 				set_name (json_object_to_string_attached ("name", al_object))
@@ -88,7 +89,7 @@ feature -- Settings
 			-- Set `output_file_name' from `s'.
 		require
 			not_empty: not s.is_empty
-			-- valid-file-name test? {PLAIN_TEXT_FILE}
+			valid_fn: is_valid_file_name (s)
 		do
 			output_file_name := s
 		ensure
@@ -99,6 +100,8 @@ feature -- Basic Operations
 
 	print_to_file (a_file_name, a_json: STRING)
 			-- `print' Current to `a_file_name' PDF file.
+		require
+			valid_fn: is_valid_file_name (a_file_name)
 		do
 			file_name := a_file_name
 			page_height := US_8_by_11_page_height
@@ -113,6 +116,8 @@ feature {NONE} -- Implementation
 	file_name: STRING
 		attribute
 			create Result.make_empty
+		ensure
+			valid_fn: is_valid_file_name (Result)
 		end
 
 	page_width, page_height: INTEGER

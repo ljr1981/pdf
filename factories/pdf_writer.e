@@ -50,7 +50,8 @@ feature {NONE} -- Initialization
 				have the same ensure as the standard `make'.
 				]"
 		require else
-			True
+			not_empty: not a_json.is_empty
+			valid_json: attached (create {JSON_PARSER}.make_with_string (a_json)) as al_parser and then al_parser.is_valid
 		do
 			create report_spec.make_from_json (a_json)
 			surface := new_surface (report_spec_attached.output_file_name, us_8_by_11_page_width, us_8_by_11_page_height)
@@ -64,6 +65,8 @@ feature {NONE} -- Initialization
 	make (a_pdf_file_name: STRING; a_height, a_width: INTEGER)
 			-- Create Current with file-name and height/width.
 		require
+			not_empty: not a_pdf_file_name.is_empty
+			positive_size: a_height > 0 and a_width > 0
 			not_has_surface : not has_surface
 			not_has_cr: not has_cr
 		do
@@ -108,6 +111,8 @@ feature -- Data Loading
 
 				Name_space ::= 'namespace' ':' '[' [Box_spec_name ','] Widget_spec_name ']'
 				]"
+		require
+			valid_json: attached (create {JSON_PARSER}.make_with_string (a_json)) as al_parser and then al_parser.is_valid
 		do
 			check valid_json: attached json_string_to_json_object (a_json) as al_data then
 				last_data_json := a_json
@@ -317,6 +322,7 @@ feature -- Settings
 			-- Set current `page_height' to `a_value' (in points)
 		require
 			not_destroyed: not is_destroyed
+			positive: a_value > 0
 		do
 			page_height := a_value
 		ensure
@@ -327,6 +333,7 @@ feature -- Settings
 			-- Set current `page_width' to `a_value' (in points)
 		require
 			not_destroyed: not is_destroyed
+			positive: a_value > 0
 		do
 			page_width := a_value
 		ensure
@@ -370,6 +377,8 @@ feature {NONE} -- Implementation
 	new_surface (a_name: STRING; a_width, a_height: INTEGER): attached like surface
 			-- Create a `new_surface' targeted to `a_name' file with `a_width' and `a_height'.
 		require
+			not_empty: not a_name.is_empty
+			positive_size: a_width > 0 and a_height > 0
 			not_destroyed: not is_destroyed
 			not_has_surface: not has_surface
 		once ("OBJECT")

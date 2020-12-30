@@ -34,7 +34,8 @@ feature {NONE} -- Initialization
 	make_from_json (a_json: STRING)
 			--<Precursor>
 		require else
-			True
+			not_empty: not a_json.is_empty
+			valid_json: attached (create {JSON_PARSER}.make_with_string (a_json)) as al_parser and then al_parser.is_valid
 		do
 			default_create
 			check attached json_string_to_json_object (a_json) as al_object then
@@ -101,34 +102,46 @@ feature {NONE} -- Initialization
 feature -- Access
 
 	type: STRING = "page"
+			--<Precursor>
 
 	height: INTEGER
+			-- `height' of page in Points.
 
 	width: INTEGER
+			-- `width' of page in Points.
 
 	indent_size: INTEGER
+			-- `indent_size' in Points.
 
 	font_color: TUPLE [r,g,b: INTEGER]
-			--
+			-- RGB `font_color'
 		attribute
 			Result := [0,0,0]
 		end
 
 	font_face: TUPLE [name: STRING; slant, weight: INTEGER]
-			--
+			-- The `font_face' `name' (font-name), `slant' (italic) and `weight' (bold or not).
+			-- See {CAIRO_FONT_*_ENUM_API} classes.
 		attribute
 			Result := ["Sans", {CAIRO_FONT_SLANT_ENUM_API}.cairo_font_slant_normal, {CAIRO_FONT_WEIGHT_ENUM_API}.cairo_font_weight_normal]
+		ensure
+			not_empty_font_name: not Result.name.is_empty
 		end
 
 	font_size: INTEGER
+			-- The `font_size' in Points.
 
 	margin_top: INTEGER
+			-- The `margin_top' distance in Points.
 
 	margin_bottom: INTEGER
+			-- The `margin_bottom' distance in Points.
 
 	margin_left: INTEGER
+			-- The `margin_left' distance in Points.
 
 	margin_right: INTEGER
+			-- The `margin_right' distance in Points.
 
 	boxes: JSON_ARRAY
 			-- A list of `boxes' specifications, possibly empty.
@@ -146,6 +159,8 @@ feature -- Settings
 
 	set_size (t: TUPLE [h, w: INTEGER])
 			-- Set `height' and `width'.
+		require
+			positive_size: t.h > 0 and then t.w > 0
 		do
 			set_height (t.h)
 			set_width (t.w)
@@ -153,6 +168,8 @@ feature -- Settings
 
 	set_height (n: INTEGER)
 			-- Set `height' to `n'.
+		require
+			positive: n > 0
 		do
 			height := n
 		ensure
@@ -161,6 +178,8 @@ feature -- Settings
 
 	set_width (n: INTEGER)
 			-- Set `width' to `n'.
+		require
+			positive: n > 0
 		do
 			width := n
 		ensure
@@ -168,7 +187,9 @@ feature -- Settings
 		end
 
 	set_indent_size (n: INTEGER)
-			--
+			-- `set_indent_size' to `n' Points.
+		require
+			positive: n > 0
 		do
 			indent_size := n
 		ensure
@@ -176,7 +197,7 @@ feature -- Settings
 		end
 
 	set_font_color (t: like font_color)
-			--
+			-- `set_font_color' to `t' like `font_color'.
 		do
 			font_color := t
 		ensure
@@ -184,7 +205,7 @@ feature -- Settings
 		end
 
 	set_font_face (t: like font_face)
-			--
+			-- `set_font_face' to `t' like `font_face'.
 		do
 			font_face := t
 		ensure
@@ -192,7 +213,7 @@ feature -- Settings
 		end
 
 	set_font_size (n: INTEGER)
-			--
+			-- `set_font_size' to `n' Points.
 		do
 			font_size := n
 		ensure
@@ -200,7 +221,9 @@ feature -- Settings
 		end
 
 	set_margin_top (n: INTEGER)
-			--
+			-- `set_margin_top' to `n' Points.
+		require
+			positive: n >= 0
 		do
 			margin_top := n
 		ensure
@@ -208,7 +231,9 @@ feature -- Settings
 		end
 
 	set_margin_bottom (n: INTEGER)
-			--
+			-- `set_margin_bottom' to `n' Points.
+		require
+			positive: n >= 0
 		do
 			margin_bottom := n
 		ensure
@@ -216,7 +241,9 @@ feature -- Settings
 		end
 
 	set_margin_left (n: INTEGER)
-			--
+			-- `set_margin_left' to `n' Points.
+		require
+			positive: n >= 0
 		do
 			margin_left := n
 		ensure
@@ -224,7 +251,9 @@ feature -- Settings
 		end
 
 	set_margin_right (n: INTEGER)
-			--
+			-- `set_margin_right' to `n' Points.
+		require
+			positive: n >= 0
 		do
 			margin_right := n
 		ensure

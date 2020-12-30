@@ -27,6 +27,7 @@ feature {NONE} -- Initialization
 			-- Initialize PDF with `a_file_name' as US Std.
 		require
 			not_destroyed: not is_destroyed
+			not_empty: not a_file_name.is_empty
 		do
 			file_name := a_file_name
 			make_us_std
@@ -44,6 +45,8 @@ feature {NONE} -- Initialization
 			-- Initialize PDF with `a_file_name' and `a_height', `a_width'.
 		require
 			not_destroyed: not is_destroyed
+			not_empty: not a_file_name.is_empty
+			positive_size: a_height > 0 and a_width > 0
 		do
 			page_height := a_height
 			page_width := a_width
@@ -84,7 +87,7 @@ feature -- Access
 		require
 			not_destroyed: not is_destroyed
 		attribute
-			Result := "pdffile.pdf"
+			Result := default_pdf_file_name.twin
 		end
 
 	page_count: INTEGER

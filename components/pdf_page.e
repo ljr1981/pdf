@@ -18,7 +18,8 @@ feature {NONE} -- Initialization (JSON)
 	make_from_json (a_json: STRING)
 			--<Precursor>
 		require else
-			True
+			not_empty: not a_json.is_empty
+			valid_json: attached (create {JSON_PARSER}.make_with_string (a_json)) as al_parser and then al_parser.is_valid
 		do
 			check attached json_string_to_json_object (a_json) as al_object then
 				-- conversions of items in al_object --> Eiffel feature objects
