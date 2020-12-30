@@ -54,7 +54,9 @@ feature {NONE} -- Initialization
 		do
 			create report_spec.make_from_json (a_json)
 			check has_page_spec: attached report_spec_attached.page_specs [1] as al_top_page then
-				make (report_spec_attached.output_file_name, al_top_page.width, al_top_page.height)
+				surface := new_surface (report_spec_attached.output_file_name, al_top_page.width, al_top_page.height)
+				last_cr := cr
+				page_make_with_cr (al_top_page)
 			end
 		end
 

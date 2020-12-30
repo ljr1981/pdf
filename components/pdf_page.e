@@ -171,9 +171,10 @@ feature -- Layout Operations
 			l_left, l_right: EV_VERTICAL_BOX -- Margins
 		-- box-specs
 			l_parent: detachable STRING
-			l_prefix,
-			l_name: STRING
+			l_prefix, l_name: STRING
 			l_min_size: INTEGER
+			l_is_horizontal: BOOLEAN
+			i: INTEGER
 		do
 		-- create main-box in cell
 			l_mbox := new_vbox (Void, "mbox", 0)
@@ -188,17 +189,61 @@ feature -- Layout Operations
 			l_bottom := new_hbox ("mbox", "bottom", margin_bottom)
 		-- deal with `boxes'
 			⟳ ic:boxes ¦
-				-- we need: parent (if any), name, and min_size
-				do_nothing
+				i := i + 1
+				check attached json_string_to_json_object (ic.representation) as al_object then
+					create l_prefix.make (12)
+					l_prefix.append_character ('b')
+					l_prefix.append_string_general (i.out)
+					check al_box_array: attached json_object_to_json_array (l_prefix, al_object) as al_box_array then
+						⟳ ic_box_object:al_box_array ¦
+							 if attached {JSON_OBJECT} ic_box_object as al_box_object then
+								if attached al_box_object.string_item ("name") as al_name_item then
+									create l_name.make (al_name_item.item.count + 2 + 10)
+									l_name.append_string_general (l_prefix)
+									l_name.append_character ('_')
+									l_name.append_string (al_name_item.item)
+								elseif attached al_box_object.string_item ("parent") as al_parent_item then
+									l_parent := if al_parent_item.item.same_string ("null") then Void
+												else al_parent_item.item end
+								elseif attached al_box_object.number_item ("type") as al_type_item then
+									l_is_horizontal := al_type_item.item.same_string ("horizontal")
+								elseif attached al_box_object.array_item ("layout") as al_layout_array then
+									⟳ ic_layout_object:al_layout_array ¦
+										if attached {JSON_OBJECT} ic_layout_object as al_layout_object then
+											if attached al_layout_object.number_item ("minimum_size") as al_min_size_item then
+												l_min_size := al_min_size_item.integer_64_item.to_integer
+											end
+										end
+									⟲
+								end
+							 end
+						⟲
+					end
+					check has_box_name: attached l_name as al_name then
+						new_box (l_parent, al_name, l_min_size, l_is_horizontal).do_nothing
+					-- resets for next box
+						l_name.wipe_out
+						if attached l_parent then
+							l_parent.wipe_out
+						end
+						l_min_size := 0
+						l_is_horizontal := False
+					end
+				end
 			⟲
+		-- deal with `widgets'
+			do_nothing -- for now ...
+						-- (this will look like boxes, above)
 		end
 
 	new_vbox (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER): EV_VERTICAL_BOX
+			-- A new vertical box, possibly extended into `a_parent'.
 		do
 			check is_vertical: attached {EV_VERTICAL_BOX} new_box (a_parent, a_name, a_min_size, False) as al_result then Result := al_result end
 		end
 
 	new_hbox (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER): EV_HORIZONTAL_BOX
+			-- A new horizontal box, possibly extended into `a_parent'.
 		do
 			check is_vertical: attached {EV_HORIZONTAL_BOX} new_box (a_parent, a_name, a_min_size, True) as al_result then Result := al_result end
 		end
