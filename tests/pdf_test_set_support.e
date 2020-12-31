@@ -202,38 +202,6 @@ end
         }
       ]
     }
-  ],
-  "widgets": [
-    {
-      "w1": [
-        {
-          "name": "my_widget_1"
-        },
-        {
-          "type": "label"
-        }
-      ]
-    },
-    {
-      "w2": [
-        {
-          "name": "my_widget_2"
-        },
-        {
-          "type": "label"
-        }
-      ]
-    },
-    {
-      "w3": [
-        {
-          "name": "my_widget_3"
-        },
-        {
-          "type": "label"
-        }
-      ]
-    }
   ]
 }
 ]"
