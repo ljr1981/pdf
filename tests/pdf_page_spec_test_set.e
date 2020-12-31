@@ -25,7 +25,6 @@ feature -- Test routines
 		do
 			l_page_spec := page_spec_3.twin
 			assert_integers_equal ("three_box_specs", 3, l_page_spec.boxes.count)
-			assert_integers_equal ("three_widget_specs", 3, l_page_spec.widgets.count)
 		end
 
 end

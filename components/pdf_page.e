@@ -55,7 +55,6 @@ feature {NONE} -- Initialize
 			set_margin_left (a_spec.margin_left)
 			set_margin_right (a_spec.margin_right)
 			boxes := a_spec.boxes.twin
-			widgets := a_spec.widgets.twin
 			cell_prep
 		end
 
@@ -143,12 +142,6 @@ feature -- Layout
 
 	boxes: JSON_ARRAY
 			-- Specifications for `boxes' (see `cell_prep').
-		attribute
-			create Result.make_empty
-		end
-
-	widgets: JSON_ARRAY
-			-- Specifications for `widgets' (see `cell_prep').
 		attribute
 			create Result.make_empty
 		end

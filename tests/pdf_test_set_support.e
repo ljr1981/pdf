@@ -35,7 +35,6 @@ check attached json_string_to_json_object (a_json) as al_object then
 	set_margin_left (json_object_to_integer_32 ("margin_left", al_object))
 	set_margin_right (json_object_to_integer_32 ("margin_right", al_object))
 	set_boxes (no_conversion)
-	set_widgets (no_conversion)
 end
 
 ]"
@@ -47,7 +46,7 @@ end
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
 		once
 			Result := "[
-{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
+{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
 ]"
 		end
 
@@ -58,7 +57,7 @@ end
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
 		once
 			Result := "[
-{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":[],"widgets":[],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
+{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":[],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
 ]"
 		end
 
@@ -263,7 +262,7 @@ end
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
 		once
 			Result := "[
-{"name":"report_spec_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"report_spec_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 		end
 
@@ -275,7 +274,7 @@ end
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
 		once
 			Result := "[
-{"name":"report_spec_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":[],"widgets":[],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"report_spec_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":[],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 		end
 
@@ -347,7 +346,7 @@ end
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
 		once
 			Result := "[
-{"name":"report_spec_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11},{"name":"page_spec_2","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":612,"width":792,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"report_spec_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11},{"name":"page_spec_2","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"height":612,"width":792,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 		end
 
@@ -505,11 +504,11 @@ feature {NONE} -- PDF_BOX Test Support
 	end
 
 	report_spec_json_1: STRING = "[
-{"name":"MY_REPORT_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":[],"widgets":[],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"MY_REPORT_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":[],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 
 	report_spec_json_2: STRING = "[
-{"name":"MY_REPORT_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"widgets":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"MY_REPORT_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 
 	report_spec_json_prettified: STRING = "[

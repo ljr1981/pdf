@@ -69,7 +69,6 @@ feature -- Test routines
 		-- grab first page
 			l_page := l_writer.current_cr_page_attached
 			assert_integers_equal ("has_3_boxes", 3, l_page.boxes.count)
-			assert_integers_equal ("has_3_widgets", 3, l_page.widgets.count)
 		-- does the prep_cell result in boxes from page-spec?
 
 		end

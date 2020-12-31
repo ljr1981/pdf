@@ -55,7 +55,6 @@ feature {NONE} -- Initialization
 				set_margin_left (json_object_to_integer_32 ("margin_left", al_object))
 				set_margin_right (json_object_to_integer_32 ("margin_right", al_object))
 				boxes := json_object_to_json_array ("boxes", al_object)
-				widgets := json_object_to_json_array ("widgets", al_object)
 			end
 		end
 
@@ -63,7 +62,6 @@ feature {NONE} -- Initialization
 			--<Precursor>
 		do
 			Result := <<
-						create {JSON_METADATA}.make_text_default,
 						create {JSON_METADATA}.make_text_default,
 						create {JSON_METADATA}.make_text_default,
 						create {JSON_METADATA}.make_text_default,
@@ -94,8 +92,7 @@ feature {NONE} -- Initialization
 						"margin_bottom",
 						"margin_left",
 						"margin_right",
-						"boxes",
-						"widgets"
+						"boxes"
 						>>
 		end
 
@@ -145,12 +142,6 @@ feature -- Access
 
 	boxes: JSON_ARRAY
 			-- A list of `boxes' specifications, possibly empty.
-		attribute
-			create Result.make_empty
-		end
-
-	widgets: JSON_ARRAY
-			-- A list of `widgets' specifications, possibly empty.
 		attribute
 			create Result.make_empty
 		end
