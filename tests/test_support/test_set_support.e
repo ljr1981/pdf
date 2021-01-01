@@ -151,8 +151,8 @@ feature -- Support
 	assert_strings_equal_for_item_for_key (a_tag: STRING; a_table: DYNAMIC_TABLE [detachable ANY, HASHABLE]; a_value: detachable ANY; a_key: HASHABLE)
 			-- Can `a_key' be found in `a_table'? If so, does `a_value' match found value?
 		do
-			if attached a_value as al_expected_value and then attached a_table.item (a_key) as al_actual_value then
-				assert_strings_equal (a_tag, al_expected_value.out, al_actual_value.out)
+			if attached a_value and then attached a_table.item (a_key) as al_actual_value then
+				assert_strings_equal (a_tag, a_value.out, al_actual_value.out)
 			end
 		end
 
@@ -160,8 +160,8 @@ feature -- Support
 			-- Can `a_key' be found in `a_table'? If so, does `a_value' match found value?
 			-- 	What are the diffs if they do not match?
 		do
-			if attached a_value as al_expected_value and then attached a_table.item (a_key) as al_actual_value then
-				assert_strings_equal_diff (a_tag, al_expected_value.out, al_actual_value.out)
+			if attached a_value and then attached a_table.item (a_key) as al_actual_value then
+				assert_strings_equal_diff (a_tag, a_value.out, al_actual_value.out)
 			end
 		end
 

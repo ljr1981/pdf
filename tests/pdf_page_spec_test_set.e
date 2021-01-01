@@ -20,11 +20,8 @@ feature -- Test routines
 						"covers/{PDF_TEST_SET_SUPPORT}.page_spec_3_json",
 						"execution/isolated",
 						"execution/serial"
-		local
-			l_page_spec: PDF_PAGE_SPEC
 		do
-			l_page_spec := page_spec_3.twin
-			assert_integers_equal ("three_box_specs", 3, l_page_spec.boxes.count)
+			assert_integers_equal ("three_box_specs", 3, page_spec_3.boxes.count)
 		end
 
 end

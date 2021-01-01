@@ -114,7 +114,7 @@ feature -- Factory Products
 			page_make
 			is_first_page_created := True
 		ensure
-			is_first_page_created = True
+			is_first_page_created
 		end
 
 	next_page

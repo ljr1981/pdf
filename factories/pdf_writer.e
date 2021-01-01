@@ -263,7 +263,7 @@ feature -- Factory Products
 			end
 			is_first_page_created := True
 		ensure
-			is_first_page_created = True
+			is_first_page_created
 			has_surface: has_surface
 			has_cr: has_cr
 		end
@@ -348,9 +348,9 @@ feature {NONE} -- Implementation: Pagination
 			has_surface: has_surface
 			has_cr: has_cr
 		do
-			if attached a_page_spec as al_page_spec_arg then
+			if attached a_page_spec then
 				-- We were passed a page_spec
-				create current_cr_page.make_from_page_spec (cr, al_page_spec_arg)
+				create current_cr_page.make_from_page_spec (cr, a_page_spec)
 			elseif not report_spec_attached.page_specs.is_empty then
 				-- We can assume a page_spec
 				if attached report_spec_attached.page_specs [1] as al_first_page_spec then

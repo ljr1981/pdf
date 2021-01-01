@@ -34,6 +34,7 @@ feature -- Test routines
 		do
 		-- prep for page
 			create l_writer.make ("page_prep_cell_test.pdf", us_8_by_11_page_height, us_8_by_11_page_width)
+			l_writer.do_nothing
 			create l_writer.make_from_json (report_spec_3.json_out)
 			l_writer.first_cr_page
 		-- grab first page

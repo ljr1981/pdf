@@ -30,13 +30,13 @@ feature {NONE} -- Initialization (JSON)
 	metadata_refreshed (a_current: ANY): ARRAY [JSON_METADATA]
 			--<Precursor>
 		do
-			Result := <<>> -- populate with "create {JSON_METADATA}.make_text_default"
+			Result := {ARRAY [JSON_METADATA]} <<>> -- populate with "create {JSON_METADATA}.make_text_default"
 		end
 
 	convertible_features (a_current: ANY): ARRAY [STRING]
 			--<Precursor>
 		do
-			Result := <<>> -- populate with "my_feature_name"
+			Result := {ARRAY [STRING]} <<>> -- populate with "my_feature_name"
 		end
 
 feature {NONE} -- Initialize
@@ -159,11 +159,6 @@ feature -- Layout Operations
 				and disabling of item expansion.
 				]"
 		local
-			l_mbox: EV_VERTICAL_BOX -- Main-box (entire page)
-			l_midbox: EV_HORIZONTAL_BOX -- Holder of left and right margins with `cbox' sandwiched between them.
-			l_top, l_bottom: EV_HORIZONTAL_BOX -- Margins
-			l_left, l_right: EV_VERTICAL_BOX -- Margins
-		-- box-specs
 			l_parent: detachable STRING
 			l_prefix, l_name: STRING
 			l_min_size: INTEGER
@@ -171,16 +166,16 @@ feature -- Layout Operations
 			i: INTEGER
 		do
 		-- create main-box in cell
-			l_mbox := new_vbox (Void, "mbox", 0)
+			new_vbox (Void, "mbox", 0)
 		-- add header (top)
-			l_top := new_hbox ("mbox", "top", margin_top)
+			new_hbox ("mbox", "top", margin_top)
 		-- add mid-box (left, cbox, right)
-			l_midbox := new_hbox ("mbox", "midbox", 0)
-			l_left := new_vbox ("midbox", "left", margin_left)
-			l_midbox.extend (cbox)
-			l_right := new_vbox ("midbox", "right", margin_right)
+			new_hbox ("mbox", "midbox", 0)
+			new_vbox ("midbox", "left", margin_left)
+			box_ref_attached (Void, "midbox").extend (cbox)
+			new_vbox ("midbox", "right", margin_right)
 		-- add footer (bottom)
-			l_bottom := new_hbox ("mbox", "bottom", margin_bottom)
+			new_hbox ("mbox", "bottom", margin_bottom)
 		-- deal with `boxes'
 			⟳ ic:boxes ¦
 				i := i + 1
@@ -200,18 +195,18 @@ feature -- Layout Operations
 									l_is_horizontal := al_type_item.item.same_string ("horizontal")
 								elseif attached al_box_object.array_item ("layout") as al_layout_array then
 									⟳ ic_layout_object:al_layout_array ¦
-										if attached {JSON_OBJECT} ic_layout_object as al_layout_object then
-											if attached al_layout_object.number_item ("minimum_size") as al_min_size_item then
+										if attached {JSON_OBJECT} ic_layout_object as al_layout_object and then
+											attached al_layout_object.number_item ("minimum_size") as al_min_size_item
+										then
 												l_min_size := al_min_size_item.integer_64_item.to_integer
-											end
 										end
 									⟲
 								end
 							 end
 						⟲
 					end
-					check has_box_name: attached l_name as al_name then
-						new_box (l_parent, al_name, l_min_size, l_is_horizontal).do_nothing
+					check has_box_name: attached l_name then
+						new_box (l_parent, l_name, l_min_size, l_is_horizontal)
 					-- resets for next box
 						l_name.wipe_out
 						if attached l_parent then
@@ -224,19 +219,19 @@ feature -- Layout Operations
 			⟲
 		end
 
-	new_vbox (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER): EV_VERTICAL_BOX
+	new_vbox (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER)
 			-- A new vertical box, possibly extended into `a_parent'.
 		do
-			check is_vertical: attached {EV_VERTICAL_BOX} new_box (a_parent, a_name, a_min_size, False) as al_result then Result := al_result end
+			new_box (a_parent, a_name, a_min_size, False)
 		end
 
-	new_hbox (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER): EV_HORIZONTAL_BOX
+	new_hbox (a_parent: detachable STRING; a_name: STRING; a_min_size: INTEGER)
 			-- A new horizontal box, possibly extended into `a_parent'.
 		do
-			check is_vertical: attached {EV_HORIZONTAL_BOX} new_box (a_parent, a_name, a_min_size, True) as al_result then Result := al_result end
+			new_box (a_parent, a_name, a_min_size, True)
 		end
 
-	new_box (a_parent_name: detachable STRING; a_name: STRING; a_min_size: INTEGER; a_is_horizontal: BOOLEAN): EV_BOX
+	new_box (a_parent_name: detachable STRING; a_name: STRING; a_min_size: INTEGER; a_is_horizontal: BOOLEAN)
 			-- Create a `new_box' with `a_name' as child of `a_parent_name' (if any, otherwise use `cell') with `a_min_size'.
 		note
 			design: "[
@@ -248,23 +243,24 @@ feature -- Layout Operations
 		require
 			unique_name: not attached box_ref (Void, a_name)
 		local
-			l_parent_box: EV_BOX
+			l_parent_box,
+			l_new_box: EV_BOX
 		do
 		-- get a ref to the `a_parent_name' (or `cell')
-			l_parent_box := if attached a_parent_name as al_parent then box_ref_attached (Void, al_parent) else cell end
+			l_parent_box := if attached a_parent_name then box_ref_attached (Void, a_parent_name) else cell end
 		-- create new box using `a_is_horizontal' (or not means is-vertical)
-			if a_is_horizontal then create {EV_HORIZONTAL_BOX} Result else create {EV_VERTICAL_BOX} Result end
-			Result.set_data ("{%"name%":%"" + a_name + "%"}")
+			if a_is_horizontal then create {EV_HORIZONTAL_BOX} l_new_box else create {EV_VERTICAL_BOX} l_new_box end
+			l_new_box.set_data ("{%"name%":%"" + a_name + "%"}")
 		-- put Result in `a_parent'
-			l_parent_box.extend (Result)
+			l_parent_box.extend (l_new_box)
 		-- handle `a_min_size' and `disable_item_expand'
 			if a_min_size > 0 then
 				if attached {EV_VERTICAL_BOX} l_parent_box then
-					Result.set_minimum_height (a_min_size)
+					l_new_box.set_minimum_height (a_min_size)
 				else
-					Result.set_minimum_width (a_min_size)
+					l_new_box.set_minimum_width (a_min_size)
 				end
-				l_parent_box.disable_item_expand (Result)
+				l_parent_box.disable_item_expand (l_new_box)
 			end
 		ensure
 			child_added_to_parent: (attached box_ref (Void, a_name) as al_box_ref and then attached a_parent_name as al_parent) implies
@@ -481,9 +477,15 @@ feature -- Basic Operations
 
 	apply_text (a_text: STRING_32)
 			-- Apply `a_text' at `current_x', `current_y'.
+		note
+			warning: "[
+				Even though we are passing in a {STRING_32}, the show-text
+				call is having to convert it down to {STRING_8}. Until this
+				is fixed, we have added a require to capture any 8-bit calls.
+				]"
 		do
 			move
-			{CAIRO_FUNCTIONS}.cairo_show_text (cr, a_text)
+			{CAIRO_FUNCTIONS}.cairo_show_text (cr, a_text.out)
 		end
 
 feature {NONE} -- Implementation: Destroy

@@ -43,9 +43,9 @@ feature -- Test routines
 
 				-- Test to ensure each item is what we expect ...
 				-- In this project SCOOP is turned on, so we care about the separate-ness
-			assert_32 ("tuple_items_equal_array_items", ∀ ic: (1 |..| l_array.count) ¦
-																	attached l_tuple as al_tuple and then
-																	attached al_tuple.item (ic) as al_item
+			assert_32 ("tuple_items_equal_array_items", ∀ ic: 1 |..| l_array.count ¦
+																	attached l_tuple and then
+																	attached l_tuple.item (ic) as al_item
 																	and then al_item = ic)
 		end
 
@@ -106,7 +106,6 @@ feature -- Test routines
 						"execution/isolated",
 						"execution/serial"
 		local
-			x: CAIRO_SVG_FUNCTIONS
 			l_win: EV_WINDOW
 			l_cell: EV_CELL
 				-- Margins
@@ -190,6 +189,26 @@ feature -- Test routines
 
 		end
 
+	report_test_1
+			-- Build a report by hand (later using json-data).
+		note
+			testing:  "execution/isolated", "execution/serial"
+			test_design: "[
+				The `report_spec_2' feature has the "hand-built" code. Normally, this object
+				would be created from an input JSON stream. In this case, we construc the object
+				by hand-coding it.
+				
+				In this first test, all we want is a PDF file with two blank pages, where
+				one page is portrait and the second is landscape.
+				]"
+		local
+			l_report: PDF_REPORT_SPEC
+		do
+			l_report := report_spec_2.twin
+			assert_strings_equal ("report_spec_2_json_string", report_spec_2_json_string, l_report.json_out)
+			assert_integers_equal ("two_page_specs", 2, l_report.page_specs.count)
+		end
+
 feature {NONE} -- Support
 
 	traverse (a_box: EV_BOX; a_page: PDF_PAGE)
@@ -217,35 +236,13 @@ feature {NONE} -- Support
 					l_text := al_label.text
 					a_page.set_current_y (al_label.screen_y + al_label.font.height_in_points)
 				end
-				if attached l_text as al_text then
-					a_page.apply_text (al_text)
+				if attached l_text then
+					a_page.apply_text (l_text)
 				end
 				if attached {EV_BOX} widget as al_box then
 					traverse (al_box, a_page)
 				end
 			⟲
-		end
-
-feature -- Test routines
-
-	report_test_1
-			-- Build a report by hand (later using json-data).
-		note
-			testing:  "execution/isolated", "execution/serial"
-			test_design: "[
-				The `report_spec_2' feature has the "hand-built" code. Normally, this object
-				would be created from an input JSON stream. In this case, we construc the object
-				by hand-coding it.
-				
-				In this first test, all we want is a PDF file with two blank pages, where
-				one page is portrait and the second is landscape.
-				]"
-		local
-			l_report: PDF_REPORT_SPEC
-		do
-			l_report := report_spec_2.twin
-			assert_strings_equal ("report_spec_2_json_string", report_spec_2_json_string, l_report.json_out)
-			assert_integers_equal ("two_page_specs", 2, l_report.page_specs.count)
 		end
 
 end
