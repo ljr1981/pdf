@@ -46,7 +46,7 @@ feature -- Test routines
 		-- Json load with no font-face, but wid=1 ...
 			create l_datum.make_from_json (Datum_json_with_widget_id_1)
 			assert_32 ("no_font_face_error_with_wid_1", not l_datum.has_font_face_error)
-			assert_strings_equal ("datum_json_with_wid_1", datum_json_null_font_face, l_datum.json_out)
+			assert_strings_equal ("datum_json_with_wid_1", datum_json_null_font_face_wid_1, l_datum.json_out)
 			check has_wid: attached l_datum.widget_id as al_wid then
 				assert_strings_equal ("wid", "1", al_wid)
 			end
@@ -55,11 +55,15 @@ feature -- Test routines
 feature {NONE} -- JSON Test Strings
 
 	data_json_good_result: STRING = "[
-{"text":"my_text","font_face":["Courier",1,2],"size":10}
+{"text":"my_text","font_face":["Courier",1,2],"widget_id":null,"size":10}
 ]"
 
 	datum_json_null_font_face: STRING = "[
-{"text":"my_text","font_face":null,"size":10}
+{"text":"my_text","font_face":null,"widget_id":null,"size":10}
+]"
+
+	datum_json_null_font_face_wid_1: STRING = "[
+{"text":"my_text","font_face":null,"widget_id":"1","size":10}
 ]"
 
 end

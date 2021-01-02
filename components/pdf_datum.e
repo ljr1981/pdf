@@ -51,6 +51,7 @@ feature {NONE} -- Initialization (JSON)
 			Result := {ARRAY [JSON_METADATA]} <<
 												create {JSON_METADATA}.make_text_default,
 												create {JSON_METADATA}.make_text_default,
+												create {JSON_METADATA}.make_text_default,
 												create {JSON_METADATA}.make_text_default
 												>> -- populate with "create {JSON_METADATA}.make_text_default"
 		end
@@ -61,6 +62,7 @@ feature {NONE} -- Initialization (JSON)
 			Result := {ARRAY [STRING]} <<
 										"text",
 										"size",
+										"widget_id",
 										"font_face"
 										>> -- populate with "my_feature_name"
 		end
