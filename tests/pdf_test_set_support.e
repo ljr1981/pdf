@@ -318,20 +318,6 @@ end
 ]"
 		end
 
-	report_json_data_string: STRING
-			-- Possible {PDF_REPORT_SPEC} json
-		note
-			EIS: "name=json_parser", "src=https://jsonparser.org/"
-		once
-			Result := "[
-{
-	"name": "report_1_name",
-	"data": %"[
-				{"d1":"page_spec":"page_spec_1","type":"text"}
-				]%"
-}
-]"
-		end
 
 	frozen report_spec_2: PDF_REPORT_SPEC
 			-- Report spec #2
@@ -409,6 +395,93 @@ feature {NONE} -- PDF_WIDGET Support
   "inside_border_padding": 0,
   "outside_border_padding": 0,
   "limit": 1
+}
+]"
+		end
+
+feature {NONE} -- PDF_DATA Test Support
+
+	empty_data_json: STRING = "[
+{
+  "widgets": [],
+  "data": []
+}
+]"
+
+feature {NONE} -- PDF_DATUM Test Support
+
+	frozen datum_json_1: STRING = "[
+{
+  "datum": [
+    {
+      "text": "my_text"
+    },
+    {
+      "size": 10
+    },
+    {
+      "font_face": [
+        "Courier",
+        1,
+        2
+      ]
+    }
+  ]
+}
+]"
+
+	frozen datum_json_1_with_error: STRING
+			-- An erroneous version of a datum item.
+		note
+			error: "[
+				The error is in the font_face values of 9 and 9.
+				]"
+		once
+			Result := "[
+{
+  "datum": [
+    {
+      "text": "my_text"
+    },
+    {
+      "size": 10
+    },
+    {
+      "font_face": [
+        "Courier",
+        9,
+        9
+      ]
+    }
+  ]
+}
+]"
+		end
+
+	frozen datum_json_1_with_font_name_error: STRING
+			-- An erroneous font name version of a datum item.
+		note
+			error: "[
+				The error is in the font_face name being empty
+				]"
+		once
+			Result := "[
+{
+  "datum": [
+    {
+      "text": "my_text"
+    },
+    {
+      "size": 10
+    },
+    {
+      "font_face": [
+        "",
+        0,
+        0
+      ]
+    }
+  ]
 }
 ]"
 		end
@@ -504,8 +577,7 @@ feature {NONE} -- PDF_BOX Test Support
       "margin_bottom": 13,
       "margin_left": 11,
       "margin_right": 11,
-      "boxes": null,
-      "widgets": null
+      "boxes": null
     }
   ]
 }
