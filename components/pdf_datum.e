@@ -143,13 +143,20 @@ feature -- Status setting
 	slant_enum: ARRAY [INTEGER]
 			-- Enumeration of font slants.
 		once
-			Result := <<{CAIRO_FONT_SLANT_ENUM_API}.cairo_font_slant_normal, {CAIRO_FONT_SLANT_ENUM_API}.cairo_font_slant_italic, {CAIRO_FONT_SLANT_ENUM_API}.cairo_font_slant_oblique>>
+			Result := <<
+						{CAIRO_FONT_SLANT_ENUM_API}.cairo_font_slant_normal,
+						{CAIRO_FONT_SLANT_ENUM_API}.cairo_font_slant_italic,
+						{CAIRO_FONT_SLANT_ENUM_API}.cairo_font_slant_oblique
+						>>
 		end
 
 	weight_enum: ARRAY [INTEGER]
 			-- Enumeration of font weights.
 		once
-			Result := <<{CAIRO_FONT_WEIGHT_ENUM_API}.cairo_font_weight_normal, {CAIRO_FONT_WEIGHT_ENUM_API}.cairo_font_weight_bold>>
+			Result := <<
+						{CAIRO_FONT_WEIGHT_ENUM_API}.cairo_font_weight_normal,
+						{CAIRO_FONT_WEIGHT_ENUM_API}.cairo_font_weight_bold
+						>>
 		end
 
 feature -- Cursor movement
