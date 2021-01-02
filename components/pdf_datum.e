@@ -80,7 +80,7 @@ feature -- Access
 
 	size: REAL assign set_size
 
-	font_face: TUPLE [name: STRING; slant, weight: INTEGER]
+	font_face: detachable TUPLE [name: STRING; slant, weight: INTEGER]
 		note
 			EIS: "name=slant_normal", "src=https://cairod.github.io/cairoD/api/cairo/c/cairo/cairo_font_slant_t.CAIRO_FONT_SLANT_NORMAL.html"
 			EIS: "name=weight_normal", "src=https://cairod.github.io/cairoD/api/cairo/c/cairo/cairo_font_weight_t.CAIRO_FONT_WEIGHT_NORMAL.html"
@@ -114,15 +114,20 @@ feature -- Status setting
 			set: size = n
 		end
 
-	set_font_face (t: like font_face)
+	set_font_face (t: attached like font_face)
+			-- Set the `font_face' to `t', if no error.
 		note
 			alt: "see font_face for more"
-			design: "[
-				Semi-silent fail, which means that the `has_font_face_error' and its
-				`error_text' will be set if the slant/weight are incorrect. However,
-				the `font_face' will be allowed to assume whatever the default value is
-				(e.g. [Courier,0,0]), so that processing can continue if the programmer
-				chooses to ignore the error flag/message.
+			warning: "[
+				Semi-silent fail, which means that if the font name, slant, or weight
+				is wrong, then the reasonable default is taken--that is--the `font_face'
+				remains undefined (detached). This might have serious implications if
+				the programmer/report-writer expects this Datum to define its font-face.
+				What will happen is this--upon fail, if the report-writer finds no widget 
+				to define the font-face, then a superceding reasonable-default font-face 
+				will be used. While this keeps the software from failing, the resulting report
+				will most likely use an unexpected font-face. Therefore, this note is
+				here to tell you (as programmer) to test for error-flags and messages!
 				]"
 		do
 			if (slant_enum.has (t.slant) or else
