@@ -15,9 +15,13 @@ feature -- Test routines
 	pdf_widget_tests
 			-- New test routine
 		note
-			testing:  "covers/{PDF_WIDGET}",
-						"covers/{PDF_WIDGET}.make",
-						"covers/{PDF_WIDGET}.make_from_json"
+			testing:  "covers/{PDF_WIDGET}.make",
+						"covers/{PDF_WIDGET}.make_from_json",
+						"covers/{PDF_WIDGET}.json_out",
+						"covers/{PDF_WIDGET}.has_error",
+						"covers/{PDF_WIDGET}.error_message",
+						"covers/{PDF_WIDGET}.type",
+						"covers/{PDF_WIDGET}.set_type"
 		local
 			l_widget: PDF_WIDGET
 		do
