@@ -32,16 +32,23 @@ feature -- Test routines
 		-- Json load with font_face enum error ...
 			create l_datum.make_from_json (datum_json_1_with_error)
 			assert_32 ("datum_json_1_with_error", l_datum.has_font_face_error)
-			assert_strings_equal ("datum_json_error_result_1", datum_json_error_result, l_datum.json_out)
+			assert_strings_equal ("datum_json_null_font_face_1", datum_json_null_font_face, l_datum.json_out)
 			check has_error_text: attached l_datum.error_text as al_error_text then
 				assert_strings_equal ("datum_json_enum_error_tuple", "[Courier,9,9]", al_error_text)
 			end
 		-- Json load with font_face empty name error ...
 			create l_datum.make_from_json (datum_json_1_with_font_name_error)
 			assert_32 ("datum_json_1_with_error", l_datum.has_font_face_error)
-			assert_strings_equal ("datum_json_error_result_2", datum_json_error_result, l_datum.json_out)
+			assert_strings_equal ("datum_json_null_font_face_2", datum_json_null_font_face, l_datum.json_out)
 			check has_error_text: attached l_datum.error_text as al_error_text then
 				assert_strings_equal ("datum_json_name_error_tuple", "[,0,0]", al_error_text)
+			end
+		-- Json load with no font-face, but wid=1 ...
+			create l_datum.make_from_json (Datum_json_with_widget_id_1)
+			assert_32 ("no_font_face_error_with_wid_1", not l_datum.has_font_face_error)
+			assert_strings_equal ("datum_json_with_wid_1", datum_json_null_font_face, l_datum.json_out)
+			check has_wid: attached l_datum.widget_id as al_wid then
+				assert_strings_equal ("wid", "1", al_wid)
 			end
 		end
 
@@ -51,7 +58,7 @@ feature {NONE} -- JSON Test Strings
 {"text":"my_text","font_face":["Courier",1,2],"size":10}
 ]"
 
-	datum_json_error_result: STRING = "[
+	datum_json_null_font_face: STRING = "[
 {"text":"my_text","font_face":null,"size":10}
 ]"
 

@@ -486,6 +486,23 @@ feature {NONE} -- PDF_DATUM Test Support
 ]"
 		end
 
+	Datum_json_with_widget_id_1: STRING = "[
+{
+  "datum": [
+    {
+      "text": "my_text"
+    },
+    {
+      "size": 10
+    },
+    {
+      "wid": 1
+    }
+  ]
+}
+]"
+
+
 feature {NONE} -- PDF_BOX Test Support
 
 	page_json_with_cell_items: STRING
