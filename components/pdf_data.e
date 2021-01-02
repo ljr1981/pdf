@@ -22,22 +22,25 @@ feature {NONE} -- Initialization (JSON)
 			True
 		do
 			check attached json_string_to_json_object (a_json) as al_object then
-				-- conversions of items in al_object --> Eiffel feature objects
-				-- see {JSON_CODE_GENERATOR} for more (use TEST_SET to generate)
+
 			end
 		end
 
 	metadata_refreshed (a_current: ANY): ARRAY [JSON_METADATA]
 			--<Precursor>
 		do
-			Result := {ARRAY [JSON_METADATA]} <<>> -- populate with "create {JSON_METADATA}.make_text_default"
+			Result := {ARRAY [JSON_METADATA]} <<
+												create {JSON_METADATA}.make_text_default,
+												create {JSON_METADATA}.make_text_default
+												>> -- populate with "create {JSON_METADATA}.make_text_default"
 		end
 
 	convertible_features (a_current: ANY): ARRAY [STRING]
 			--<Precursor>
 		do
 			Result := {ARRAY [STRING]} <<
-
+										"widgets",
+										"data"
 										>> -- populate with "my_feature_name"
 		end
 
@@ -51,11 +54,24 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
+	widgets: ARRAYED_LIST [PDF_WIDGET]
+			-- A list of `widgets' for this data-stream.
+		attribute
+			create Result.make (100)
+		end
 
+	data: ARRAYED_LIST [PDF_DATUM]
+			-- A list of `data' for this data-stream.
+		attribute
+			create Result.make (1_000)
+		end
 
 feature -- Measurement
 
 feature -- Status report
+
+	has_json_input_error: BOOLEAN
+			--<Precursor>
 
 feature -- Status setting
 

@@ -146,11 +146,11 @@ feature -- Measurement
 
 feature -- Status report
 
+	has_json_input_error: BOOLEAN
+			--<Precursor>
+
 	has_font_face_error: BOOLEAN
 			-- Do we have an error in `font_face' setting?
-
-	error_text: detachable STRING
-			-- What was the error?
 
 feature -- Status setting
 
@@ -200,12 +200,12 @@ feature -- Status setting
 				font_face := t
 			else
 				has_font_face_error := True
-				error_text := "[" + t.name + "," + t.slant.out + "," + t.weight.out + "]"
+				error_message := "[" + t.name + "," + t.slant.out + "," + t.weight.out + "]"
 			end
 		ensure
-			flag_implies_message: has_font_face_error implies attached error_text
+			flag_implies_message: has_font_face_error implies attached error_message
 			set_without_error: (font_face ~ t) implies not has_font_face_error
-			set_with_error: (has_font_face_error and attached error_text) implies not (font_face ~ t)	-- (not a) or else b <-- Implication with possible undefinedness
+			set_with_error: (has_font_face_error and attached error_message) implies not (font_face ~ t)	-- (not a) or else b <-- Implication with possible undefinedness
 		end
 
 	slant_enum: ARRAY [INTEGER]

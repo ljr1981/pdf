@@ -126,7 +126,7 @@ feature -- Measurement
 
 feature -- Status report
 
-	has_error: BOOLEAN
+	has_json_input_error: BOOLEAN
 			-- Does current have any error?
 		do
 			Result := bad_type
@@ -147,12 +147,6 @@ feature -- Status report
 				error_message.append_string_general ("min Ht/Wid: " + minimum_height.out + "," + minimum_width.out + "%N")
 				error_message.append_string_general ("Padding In/Out: " + inside_border_padding.out + "," + outside_border_padding.out + "%N")
 			end
-		end
-
-	error_message: STRING
-			-- Any errors logged here.
-		attribute
-			create Result.make_empty
 		end
 
 	bad_type: BOOLEAN do Result := not good_type end
@@ -202,7 +196,7 @@ feature -- Status setting
 			--
 		do
 			type := v
-			has_error.do_nothing
+			has_json_input_error.do_nothing
 		ensure
 			set: type ~ v
 		end

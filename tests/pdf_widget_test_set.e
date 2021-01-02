@@ -29,24 +29,24 @@ feature -- Test routines
 			create l_widget
 			assert_strings_equal ("default_json_out", default_json_out, l_widget.json_out)
 			print (l_widget.error_message)
-			assert_32 ("no_error_1", not l_widget.has_error)
+			assert_32 ("no_error_1", not l_widget.has_json_input_error)
 			create l_widget.make
 			assert_strings_equal ("make_default_json_out", default_json_out, l_widget.json_out)
-			assert_32 ("no_error_2", not l_widget.has_error)
+			assert_32 ("no_error_2", not l_widget.has_json_input_error)
 			create l_widget.make_from_json (make_from_json_json_out_default)
 			assert_strings_equal ("make_from_json_json_out_default", make_from_json_json_out_default, l_widget.json_out)
-			assert_32 ("no_error_3", not l_widget.has_error)
+			assert_32 ("no_error_3", not l_widget.has_json_input_error)
 		-- Creations with non-default settings ...
 			create l_widget.make_from_json (make_from_json_1)
 			assert_strings_equal ("make_from_json_1", make_from_json_1, l_widget.json_out)
-			assert_32 ("no_error_4", not l_widget.has_error)
+			assert_32 ("no_error_4", not l_widget.has_json_input_error)
 		-- Tests errors
 			l_widget.set_type ("blah")
 			assert_strings_equal ("is_blah", "blah", l_widget.type_attached)
-			assert_32 ("has_blah_error", l_widget.has_error)
+			assert_32 ("has_blah_error", l_widget.has_json_input_error)
 			assert_strings_equal ("err_msg_1", err_msg_1, l_widget.error_message)
 			l_widget.set_type ("label")
-			assert_32 ("no_error_5", not l_widget.has_error)
+			assert_32 ("no_error_5", not l_widget.has_json_input_error)
 		end
 
 feature {NONE} -- Test support JSON

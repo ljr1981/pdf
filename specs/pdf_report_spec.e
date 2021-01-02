@@ -72,6 +72,11 @@ feature -- Access
 
 	is_destroyed: BOOLEAN
 
+feature -- Status Report
+
+	has_json_input_error: BOOLEAN
+			--<Precursor>
+
 feature -- Settings
 
 	set_page_specs (v: ARRAYED_LIST [detachable ANY])

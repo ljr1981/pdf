@@ -33,14 +33,14 @@ feature -- Test routines
 			create l_datum.make_from_json (datum_json_1_with_error)
 			assert_32 ("datum_json_1_with_error", l_datum.has_font_face_error)
 			assert_strings_equal ("datum_json_null_font_face_1", datum_json_null_font_face, l_datum.json_out)
-			check has_error_text: attached l_datum.error_text as al_error_text then
+			check has_error_text: attached l_datum.error_message as al_error_text then
 				assert_strings_equal ("datum_json_enum_error_tuple", "[Courier,9,9]", al_error_text)
 			end
 		-- Json load with font_face empty name error ...
 			create l_datum.make_from_json (datum_json_1_with_font_name_error)
 			assert_32 ("datum_json_1_with_error", l_datum.has_font_face_error)
 			assert_strings_equal ("datum_json_null_font_face_2", datum_json_null_font_face, l_datum.json_out)
-			check has_error_text: attached l_datum.error_text as al_error_text then
+			check has_error_text: attached l_datum.error_message as al_error_text then
 				assert_strings_equal ("datum_json_name_error_tuple", "[,0,0]", al_error_text)
 			end
 		-- Json load with no font-face, but wid=1 ...

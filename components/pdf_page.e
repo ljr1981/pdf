@@ -315,6 +315,11 @@ feature -- Layout Helpers
 			end
 		end
 
+feature -- Status Report
+
+	has_json_input_error: BOOLEAN
+			--<Precursor>
+
 feature -- Settings
 
 	set_font_color (a_rgb: TUPLE [r, g, b: INTEGER])

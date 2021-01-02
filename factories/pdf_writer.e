@@ -316,6 +316,11 @@ feature -- Access: Generated
 			end
 		end
 
+feature -- Status Report
+
+	has_json_input_error: BOOLEAN
+			--<Precursor>
+
 feature -- Settings
 
 	set_page_height (a_value: INTEGER)
