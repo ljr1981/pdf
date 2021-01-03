@@ -408,6 +408,92 @@ feature {NONE} -- PDF_DATA Test Support
 }
 ]"
 
+	frozen data_json_1: STRING
+		note
+			design: "[
+				In the following, you will find a json structure like:
+				
+					"data":[{"1":{"datum":[{"tex ... }
+				
+				The "data" shows you where the list of datum starts.
+				Each datum item is numbered serially, starting at 1, 2, 3, ...
+				Each datum item is a labeled JSON_ARRAY, named "datum".
+				Each datum item is an array of elements describing the datum.
+				
+				Therefore, the first datum item starts with:
+				
+					{"1":{"datum":[{"text":"my_tex ... }
+				
+				The second datum item starts with:
+				
+					{"2":{"datum":[{"text":"my_tex ... }
+				
+				Each successive datum will have a new and unique serial number,
+				where datum are serialized starting at 1 and advancing by one
+				for each new datum in the data.
+				
+				It is important to understand this when comparing to example/test
+				JSON strings found below (e.g. `Datum_json_1' and so on in the next
+				feature group, "PDF_DATUM Test Support")
+				]"
+		once
+			Result := "[
+{
+  "widgets": [
+    {
+      "text": "label_text",
+      "type": "label",
+      "widget_id": "1",
+      "inside_border_padding": 3,
+      "outside_border_padding": 3,
+      "minimum_height": 20,
+      "minimum_width": 100
+    }
+  ],
+  "data": [
+    {
+      "1": {
+        "datum": [
+          {
+            "text": "my_text_1"
+          },
+          {
+            "size": 10
+          },
+          {
+            "font_face": [
+              "Courier",
+              1,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "2": {
+        "datum": [
+          {
+            "text": "my_text_2"
+          },
+          {
+            "size": 10
+          },
+          {
+            "font_face": [
+              "Courier",
+              1,
+              2
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
+]"
+		end
+
 feature {NONE} -- PDF_DATUM Test Support
 
 	frozen datum_json_1: STRING = "[

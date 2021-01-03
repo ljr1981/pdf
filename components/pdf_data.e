@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Representation of a collection of Datum with Widgets"
 
 class
@@ -20,9 +20,23 @@ feature {NONE} -- Initialization (JSON)
 			--<Precursor>
 		require else
 			True
+		local
+			l_json: STRING
 		do
 			check attached json_string_to_json_object (a_json) as al_object then
-
+			-- Load `widgets' ...
+				⟳ ic:json_object_to_json_array ("widgets", al_object) ¦
+					widgets.force (create {PDF_WIDGET}.make_from_json (ic.representation))
+				⟲
+			-- Load `data' as instances of {PDF_DATUM} ...
+				⟳ ic:json_object_to_json_array ("data", al_object) ¦
+					check attached json_string_to_json_object (ic.representation) as al_ith and then
+							attached json_object_to_json_object (al_ith, 1) as al_datum
+					then
+						l_json := al_datum.representation
+					end
+					data.force (create {PDF_DATUM}.make_from_json (l_json))
+				⟲
 			end
 		end
 
@@ -72,6 +86,24 @@ feature -- Status report
 
 	has_json_input_error: BOOLEAN
 			--<Precursor>
+			-- Compute Result based on `widgets' and `data' errors.
+		do
+			error_message.wipe_out
+		-- Gather error messages from all widgets
+			⟳ ic:widgets ¦
+				if ic.has_json_input_error then
+					error_message.append_string_general (ic.error_message)
+					Result := True
+				end
+			⟲
+		-- Gather error messages from all data
+			⟳ ic:data ¦
+				if ic.has_json_input_error then
+					error_message.append_string_general (ic.error_message)
+					Result := True
+				end
+			⟲
+		end
 
 feature -- Status setting
 

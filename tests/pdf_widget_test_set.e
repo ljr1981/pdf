@@ -53,17 +53,17 @@ feature {NONE} -- Test support JSON
 
 		-- The json_out should match the default_create
 	default_json_out: STRING = "[
-{"text":null,"type":null,"widget_id":null,"inside_border_padding":0,"outside_border_padding":0,"minimum_height":0,"minimum_width":0}
+{"widget_id":null,"type":null,"text":null,"minimum_height":0,"minimum_width":0,"inside_border_padding":0,"outside_border_padding":0}
 ]"
 
 		-- The json_out should match the call to make result
 	make_from_json_json_out_default: STRING = "[
-{"text":null,"type":null,"widget_id":"1","inside_border_padding":0,"outside_border_padding":0,"minimum_height":0,"minimum_width":0}
+{"widget_id":"1","type":null,"text":null,"minimum_height":0,"minimum_width":0,"inside_border_padding":0,"outside_border_padding":0}
 ]"
 
 		-- The json_out should match whatever non-default json was passed in
 	make_from_json_1: STRING = "[
-{"text":"label_text","type":"label","widget_id":"1","inside_border_padding":3,"outside_border_padding":3,"minimum_height":20,"minimum_width":100}
+{"widget_id":"1","type":"label","text":"label_text","minimum_height":20,"minimum_width":100,"inside_border_padding":3,"outside_border_padding":3}
 ]"
 
 	err_msg_1: STRING = "[
