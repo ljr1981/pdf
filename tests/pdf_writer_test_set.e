@@ -49,11 +49,9 @@ feature -- Test routines
 			assert_integers_equal ("has_1_page_templates", 1, l_writer.page_templates.count)
 
 		-- Load report data from json
-			l_writer.load_data (report_spec_1_data_json)
-			assert_integers_equal ("three_datum", 3, l_writer.last_data_json_object_attached.count)
-			if attached l_writer.last_data_json_object_attached.item (create {JSON_STRING}.make_from_string ("d1")) as al_value then
-				assert_strings_equal ("d1_json", "[{%"page_spec%":%"page_spec_1%"},{%"box%":%"my_box_1%"},{%"widget%":%"my_widget_1%"},%"TEXT1%"]", al_value.representation)
-			end
+			l_writer.load_pdf_data (data_json_1)
+
+			assert_32 ("not_has_json_input_error", not l_writer.has_json_input_error)
 		end
 
 end

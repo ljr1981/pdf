@@ -246,54 +246,6 @@ end
 ]"
 		end
 
-	frozen report_spec_1_data_json: STRING
-			-- Possible "data" for `report_spec_1_json_1' (i.e. same as `report_spec_1').
-		note
-			prettified: "because it is used to test loading."
-			EIS: "name=json_parser", "src=https://jsonparser.org/"
-		once
-			Result := "[
-{
-  "d1": [
-    {
-      "page_spec": "page_spec_1"
-    },
-    {
-      "box": "my_box_1"
-    },
-    {
-      "widget": "my_widget_1"
-    },
-    "TEXT1"
-  ],
-  "d2": [
-    {
-      "page_spec": "page_spec_1"
-    },
-    {
-      "box": "my_box_2"
-    },
-    {
-      "widget": "my_widget_1"
-    },
-    "TEXT2"
-  ],
-  "d3": [
-    {
-      "page_spec": "page_spec_1"
-    },
-    {
-      "box": "my_box_3"
-    },
-    {
-      "widget": "my_widget_1"
-    },
-    "TEXT3"
-  ]
-}
-]"
-		end
-
 	report_spec_1_data_json_check: STRING = "[
 {"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"cell":{"sub_items":[{"sub_items":null,"parent":null,"text":"TEST_TEXT_FOR_TEXT_WIDGET","expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":1}],"parent":null,"expandable":true,"offset_x":0,"offset_y":0,"height":0,"width":0,"inside_border_padding":0,"outside_border_padding":0,"limit":0},"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
 ]"

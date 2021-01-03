@@ -16,7 +16,7 @@ feature -- Test routines
 			-- Example of a basic PDF_WRITER being used.
 		note
 			testing:  "covers/{PDF_WRITER}.make_from_json",
-						"covers/{PDF_WRITER}.load_data",
+						"covers/{PDF_WRITER}.load_pdf_data",
 			          	"execution/isolated", "execution/serial"
 			description: "[
 				We want to show how to use a PDF_WRITER to print a report.
@@ -36,7 +36,31 @@ feature -- Test routines
 			l_writer: PDF_WRITER
 		do
 			create l_writer.make_from_json (report_spec_3.json_out)
-			l_writer.load_data (report_spec_1_data_json)
+			l_writer.load_pdf_data (data_json_1)
+			l_writer.output_pdf
+		end
+
+	pdf_writer_example_2
+		note
+			description: "[
+				In the example above, we assume there are no errors in either
+				the report-spec or in the data-spec (widgets/datum). In this
+				example, we explicitly test to ensure this is the case before
+				moving on.
+				]"
+		local
+			l_writer: PDF_WRITER
+		do
+			create l_writer.make_from_json (report_spec_3.json_out)
+
+		-- check for json errors after creation ...
+			assert_32 ("no_creation_errors", not l_writer.has_json_input_error)
+
+			l_writer.load_pdf_data (data_json_1)
+
+		-- check from json errors after data-loading ...
+			assert_32 ("no_data_load_errors", not l_writer.has_json_input_error)
+
 			l_writer.output_pdf
 		end
 

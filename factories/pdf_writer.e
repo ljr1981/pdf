@@ -95,47 +95,20 @@ feature {NONE} -- Initialization
 
 feature -- Data Loading
 
-	load_data (a_json: STRING)
-			-- `load_data' as `a_json' string.
-		note
-			process: "[
-				1. load data from `a_json'
-				2. validate data against page/box/widget namespace specs in page-specs
-				]"
-			data_structure: "[
-				Data ::= '{' {Datum}+ '}'
-				
-				Datum ::= '{' Identifier ',' Name_space ',' Data_item '}'
-				
-				Identifier ::= 'd' Serial_number
-
-				Name_space ::= 'namespace' ':' '[' [Box_spec_name ','] Widget_spec_name ']'
-				]"
-		require
-			valid_json: attached (create {JSON_PARSER}.make_with_string (a_json)) as al_parser and then al_parser.is_valid
+	load_pdf_data (a_json: STRING)
+			-- Loads `pdf_data' from `a_json'.
 		do
-			check valid_json: attached json_string_to_json_object (a_json) as al_data then
-				last_data_json := a_json
-				last_data_json_object := al_data
-			end
+			create pdf_data.make_from_json (a_json)
 		end
 
-	last_data_json_object: detachable JSON_OBJECT
-			-- Last valid json-data object from `load_data'.
+	pdf_data: detachable PDF_DATA
+			-- The `pdf_data' for Current after `load_pdf_data'
+			-- 	with possible errors.
 
-	last_data_json_object_attached: attached like last_data_json_object
-			-- Attached version of `last_data_json_object'.
+	pdf_data_attached: attached like pdf_data
+			-- The attached version of `pdf_data'.
 		do
-			check attached last_data_json_object as al_result then Result := al_result end
-		end
-
-	last_data_json: detachable STRING
-			-- Last valid json-data string from `load_data'.
-
-	last_data_json_attached: attached like last_data_json
-			-- Attached version of `last_data_json'.
-		do
-			check has_data: attached last_data_json as al_result then Result := al_result end
+			check attached pdf_data as al_result then Result := al_result end
 		end
 
 feature -- Data Processing (report generation in-memory)
@@ -149,12 +122,12 @@ feature -- Data Processing (report generation in-memory)
 
 	pages: ARRAYED_LIST [PDF_PAGE]
 			-- The `pages' generated from `last_data'
-		require
-			has_data: attached last_data_json_object
 		attribute
-			create Result.make (last_data_json_object_attached.count)
-		ensure
-			enough: Result.capacity = last_data_json_object_attached.count
+			if attached pdf_data as al_pdf_data then
+				create Result.make (al_pdf_data.data.count)
+			else
+				create Result.make (0)
+			end
 		end
 
 	process_data
@@ -309,17 +282,24 @@ feature -- Access: Generated
 			has_surface: has_surface
 			has_cr: has_cr
 		do
-			if not attached last_data_json_object then
-				Result := 0
-			else
-				Result := pages.count
-			end
+			Result := pages.count
 		end
 
 feature -- Status Report
 
 	has_json_input_error: BOOLEAN
 			--<Precursor>
+			-- What are the cummulative errors of `pdf_data' and `report_spec'
+		do
+			if attached report_spec as al_report_spec and then al_report_spec.has_json_input_error then
+				Result := True
+				error_message.append_string_general (al_report_spec.error_message)
+			end
+			if attached pdf_data as al_pdf_data and then al_pdf_data.has_json_input_error then
+				Result := True
+				error_message.append_string_general (al_pdf_data.error_message)
+			end
+		end
 
 feature -- Settings
 
