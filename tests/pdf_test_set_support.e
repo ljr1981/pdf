@@ -446,6 +446,45 @@ feature {NONE} -- PDF_DATA Test Support
 ]"
 		end
 
+feature {NONE} -- PDF_DATUM_GROUP Test Support
+
+	frozen data_group_json_1: STRING
+			--
+		note
+
+		do
+			Result := "[
+{
+  "datum_group": [
+    {
+      "page_spec_name": "page_spec_1"
+    },
+    {
+      "datums": [
+        {
+          "datum": [
+            {
+              "text": "my_text"
+            },
+            {
+              "size": 10
+            },
+            {
+              "font_face": [
+                "Courier",
+                1,
+                2
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+]"
+		end
+
 feature {NONE} -- PDF_DATUM Test Support
 
 	frozen datum_json_1: STRING = "[

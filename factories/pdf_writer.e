@@ -131,7 +131,7 @@ feature -- Data Processing (report generation in-memory)
 		end
 
 	process_data
-			-- For each `last_data_json_object' item,
+			-- For each `pdf_data' item (datum),
 			-- create a copy of a {PDF_PAGE} template.
 		note
 			before_coding_continues: "[
