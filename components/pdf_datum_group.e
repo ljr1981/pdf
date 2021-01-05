@@ -26,15 +26,14 @@ feature {NONE} -- Initialization (JSON)
 		require else
 			True
 		do
-			check attached json_string_to_json_object (a_json) as al_object then
-				check attached {JSON_ARRAY} json_object_to_json_array ("datum_group", al_object) as al_dg_array then
-					page_spec_name := json_array_get_keyed_object_string_attached (al_dg_array, "page_spec_name")
-					check attached {JSON_ARRAY} json_array_get_keyed_object_value (al_dg_array, "datums") as al_datum_array then
-						⟳ ic:al_datum_array ¦
-							datums.force (create {PDF_DATUM}.make_from_json (ic.representation))
-						⟲
-					end
-				end
+			check attached json_string_to_json_object (a_json) as al_object and then
+					attached {JSON_ARRAY} json_object_to_json_array ("datum_group", al_object) as al_dg_array then
+						page_spec_name := json_array_get_keyed_object_string_attached (al_dg_array, "page_spec_name")
+						check attached {JSON_ARRAY} json_array_get_keyed_object_value (al_dg_array, "datums") as al_datum_array then
+							⟳ ic:al_datum_array ¦
+								datums.force (create {PDF_DATUM}.make_from_json (ic.representation))
+							⟲
+						end
 			end
 		end
 
