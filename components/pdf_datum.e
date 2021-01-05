@@ -23,25 +23,37 @@ feature {NONE} -- Initialization (JSON)
 		do
 			check attached json_string_to_json_object (a_json) as al_object then
 				l_array := json_object_to_json_array ("datum", al_object)
-				⟳ ic:l_array.array_representation ¦
-					if attached {JSON_OBJECT} ic as al_array_object then
-						if al_array_object.has_key (create {JSON_STRING}.make_from_string ("text")) and then attached json_object_to_string ("text", al_array_object) as al_text then
-							text := al_text
-						elseif al_array_object.has_key (create {JSON_STRING}.make_from_string ("size")) and then attached json_object_to_integer ("size", al_array_object) as al_size then
-							size := al_size
-						elseif al_array_object.has_key (create {JSON_STRING}.make_from_string ("wid")) and then attached json_object_to_string ("wid", al_array_object) as al_wid then
-							widget_id := al_wid
-						elseif al_array_object.has_key (create {JSON_STRING}.make_from_string ("font_face")) and then attached json_object_to_json_array ("font_face", al_array_object) as al_array then
-							-- EXAMPLE: {"font_face":["Courier",1,2]}
-							check attached {JSON_STRING} al_array [1] as al_face and then
-									attached {JSON_NUMBER} al_array [2] as al_slant and then
-									attached {JSON_NUMBER} al_array [3] as al_weight
-							then
-								set_font_face ([al_face.item, al_slant.integer_64_item.to_integer, al_weight.integer_64_item.to_integer])
-							end
-						end
+				text := json_array_get_keyed_object_string_attached (l_array, "text")
+				size := json_array_get_keyed_object_integer_64_attached (l_array, "size").to_integer
+				widget_id := json_array_get_keyed_object_string (l_array, "widget_id")
+				if attached {JSON_ARRAY} json_array_get_keyed_object_value (l_array, "font_face") as al_ff_array then
+					check has_ff_data: attached {JSON_STRING} al_ff_array [1] as al_face and then
+							attached {JSON_NUMBER} al_ff_array [2] as al_slant and then
+							attached {JSON_NUMBER} al_ff_array [3] as al_weight
+					then
+						set_font_face ([al_face.item, al_slant.integer_64_item.to_integer, al_weight.integer_64_item.to_integer])
 					end
-				⟲
+				end
+
+--				⟳ ic:l_array.array_representation ¦
+--					if attached {JSON_OBJECT} ic as al_array_object then
+--						if al_array_object.has_key (create {JSON_STRING}.make_from_string ("text")) and then attached json_object_to_string ("text", al_array_object) as al_text then
+--							text := al_text
+--						elseif al_array_object.has_key (create {JSON_STRING}.make_from_string ("size")) and then attached json_object_to_integer ("size", al_array_object) as al_size then
+--							size := al_size
+--						elseif al_array_object.has_key (create {JSON_STRING}.make_from_string ("wid")) and then attached json_object_to_string ("wid", al_array_object) as al_wid then
+--							widget_id := al_wid
+--						elseif al_array_object.has_key (create {JSON_STRING}.make_from_string ("font_face")) and then attached json_object_to_json_array ("font_face", al_array_object) as al_array then
+--							-- EXAMPLE: {"font_face":["Courier",1,2]}
+--							check attached {JSON_STRING} al_array [1] as al_face and then
+--									attached {JSON_NUMBER} al_array [2] as al_slant and then
+--									attached {JSON_NUMBER} al_array [3] as al_weight
+--							then
+--								set_font_face ([al_face.item, al_slant.integer_64_item.to_integer, al_weight.integer_64_item.to_integer])
+--							end
+--						end
+--					end
+--				⟲
 			end
 		end
 

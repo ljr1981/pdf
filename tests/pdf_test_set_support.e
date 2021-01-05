@@ -573,7 +573,7 @@ feature {NONE} -- PDF_DATUM Test Support
       "size": 10
     },
     {
-      "wid": 1
+      "widget_id": "1"
     }
   ]
 }
