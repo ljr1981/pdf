@@ -37,6 +37,7 @@ feature -- Test routines
 		do
 			create l_writer.make_from_json (report_spec_3.json_out)
 			l_writer.load_pdf_data (data_json_1)
+			l_writer.process_data
 			l_writer.output_pdf
 		end
 
@@ -61,6 +62,7 @@ feature -- Test routines
 		-- check from json errors after data-loading ...
 			assert_32 ("no_data_load_errors", not l_writer.has_json_input_error)
 
+			l_writer.process_data
 			l_writer.output_pdf
 		end
 

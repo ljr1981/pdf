@@ -140,10 +140,10 @@ feature -- Layout
 			Result.set_data ("{%"name%":%"cbox%"}") -- e.g. {"name":"cbox"}
 		end
 
-	boxes: JSON_ARRAY
+	boxes: ARRAYED_LIST [PDF_BOX]
 			-- Specifications for `boxes' (see `cell_prep').
 		attribute
-			create Result.make_empty
+			create Result.make (0)
 		end
 
 feature -- Layout Operations
@@ -160,7 +160,7 @@ feature -- Layout Operations
 				]"
 		local
 			l_parent: detachable STRING
-			l_prefix, l_name: STRING
+			l_name: STRING
 			l_min_size: INTEGER
 			l_is_horizontal: BOOLEAN
 			i: INTEGER
@@ -178,44 +178,9 @@ feature -- Layout Operations
 			new_hbox ("mbox", "bottom", margin_bottom)
 		-- deal with `boxes'
 			⟳ ic:boxes ¦
-				i := i + 1
-				check attached json_string_to_json_object (ic.representation) as al_object then
-					create l_prefix.make (12)
-					l_prefix.append_character ('b')
-					l_prefix.append_string_general (i.out)
-					check al_box_array: attached json_object_to_json_array (l_prefix, al_object) as al_box_array then
-						⟳ ic_box_object:al_box_array ¦
-							 if attached {JSON_OBJECT} ic_box_object as al_box_object then
-								if attached al_box_object.string_item ("name") as al_name_item then
-									l_name := al_name_item.item
-								elseif attached al_box_object.string_item ("parent") as al_parent_item then
-									l_parent := if al_parent_item.item.same_string ("null") then Void
-												else al_parent_item.item end
-								elseif attached al_box_object.number_item ("type") as al_type_item then
-									l_is_horizontal := al_type_item.item.same_string ("horizontal")
-								elseif attached al_box_object.array_item ("layout") as al_layout_array then
-									⟳ ic_layout_object:al_layout_array ¦
-										if attached {JSON_OBJECT} ic_layout_object as al_layout_object and then
-											attached al_layout_object.number_item ("minimum_size") as al_min_size_item
-										then
-												l_min_size := al_min_size_item.integer_64_item.to_integer
-										end
-									⟲
-								end
-							 end
-						⟲
-					end
-					check has_box_name: attached l_name then
-						new_box (l_parent, l_name, l_min_size, l_is_horizontal)
-					-- resets for next box
-						l_name.wipe_out
-						if attached l_parent then
-							l_parent.wipe_out
-						end
-						l_min_size := 0
-						l_is_horizontal := False
-					end
-				end
+				l_parent := if attached ic.parent as al_parent then al_parent else "cbox" end
+				l_is_horizontal := ic.type.same_string ("horizontal")
+				new_box (l_parent, ic.name, ic.layout.minimum_size, l_is_horizontal)
 			⟲
 		end
 

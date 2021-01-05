@@ -133,11 +133,18 @@ feature -- Data Processing (report generation in-memory)
 	process_data
 			-- For each `last_data_json_object' item,
 			-- create a copy of a {PDF_PAGE} template.
+		note
+			before_coding_continues: "[
+				The PDF_DATUM needs to have both a "lid" (layout_id) and
+				a "bid" (box_id)
+				]"
+		require
+		-- Where are we at the start of this process?
+			has_report_spec: attached report_spec							-- We have a Report Specification
+			has_page_specs: not report_spec_attached.page_specs.is_empty	-- It has at least one Page Specification
+			no_errors: not has_json_input_error								-- There are no JSON errors at any level
 		do
-		-- each data item ...
-		-- determine which page to use from data
-		-- set `surface' attributes from selected page
-		-- add the current data item
+			do_nothing
 		end
 
 feature -- Report finalization
@@ -291,6 +298,7 @@ feature -- Status Report
 			--<Precursor>
 			-- What are the cummulative errors of `pdf_data' and `report_spec'
 		do
+			error_message.wipe_out
 			if attached report_spec as al_report_spec and then al_report_spec.has_json_input_error then
 				Result := True
 				error_message.append_string_general (al_report_spec.error_message)

@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "PDF_PAGE Specification"
 
 class
@@ -54,7 +54,9 @@ feature {NONE} -- Initialization
 				set_margin_bottom (json_object_to_integer_32 ("margin_bottom", al_object))
 				set_margin_left (json_object_to_integer_32 ("margin_left", al_object))
 				set_margin_right (json_object_to_integer_32 ("margin_right", al_object))
-				boxes := json_object_to_json_array ("boxes", al_object)
+				⟳ ic:json_object_to_json_array ("boxes", al_object) ¦
+					boxes.force (create {PDF_BOX}.make_from_json (ic.representation))
+				⟲
 			end
 		end
 
@@ -140,10 +142,10 @@ feature -- Access
 	margin_right: INTEGER
 			-- The `margin_right' distance in Points.
 
-	boxes: JSON_ARRAY
+	boxes: ARRAYED_LIST [PDF_BOX]
 			-- A list of `boxes' specifications, possibly empty.
 		attribute
-			create Result.make_empty
+			create Result.make (0)
 		end
 
 feature -- Status Report

@@ -57,7 +57,7 @@ end
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
 		once
 			Result := "[
-{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":[],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
+{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}
 ]"
 		end
 
@@ -143,7 +143,7 @@ end
   "margin_right": 11,
   "boxes": [
     {
-      "b1": [
+      "box": [
         {
           "name": "my_box_1"
         },
@@ -163,7 +163,7 @@ end
       ]
     },
     {
-      "b2": [
+      "box": [
         {
           "name": "my_box_2"
         },
@@ -183,7 +183,7 @@ end
       ]
     },
     {
-      "b3": [
+      "box": [
         {
           "name": "my_box_3"
         },
@@ -242,7 +242,7 @@ end
 			EIS: "name=json_parser", "src=https://jsonparser.org/"
 		once
 			Result := "[
-{"name":"report_spec_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":[],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"report_spec_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 		end
 
@@ -541,7 +541,7 @@ feature {NONE} -- PDF_DATUM Test Support
 ]"
 
 
-feature {NONE} -- PDF_BOX Test Support
+feature {NONE} -- PDF_REPORT_SPEC Test Support
 
 	page_json_with_cell_items: STRING
 			-- A {PDF_PAGE_SPEC} json string with partial-`cell' data.
@@ -600,7 +600,7 @@ feature {NONE} -- PDF_BOX Test Support
 	end
 
 	report_spec_json_1: STRING = "[
-{"name":"MY_REPORT_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":[],"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
+{"name":"MY_REPORT_1","output_file_name":"my.pdf","page_specs":[{"name":"page_spec_1","font_color":[0,0,0],"font_face":["Sans",0,0],"boxes":null,"height":792,"width":612,"indent_size":50,"font_size":10,"margin_top":16,"margin_bottom":13,"margin_left":11,"margin_right":11}]}
 ]"
 
 	report_spec_json_2: STRING = "[
@@ -637,5 +637,38 @@ feature {NONE} -- PDF_BOX Test Support
   ]
 }
 ]"
+
+feature {NONE} -- PDF_BOX Support
+
+	frozen box_json_1: STRING
+			--
+		note
+
+		local
+
+		once
+			Result := "[
+{
+  "box": [
+    {
+      "name": "my_box_1"
+    },
+    {
+      "parent": null
+    },
+    {
+      "type": "vertical"
+    },
+    {
+      "layout": [
+        {
+          "minimum_size": 0
+        }
+      ]
+    }
+  ]
+}
+]"
+		end
 
 end
